@@ -9,81 +9,87 @@
 body {
   font-family: Arial;
   background: #ffffff;
-  margin: 0;
-  padding: 20px;
   text-align: center;
+  padding: 20px;
 }
 
 .container {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: auto;
 }
 
 h1 {
   margin-bottom: 30px;
-  color: #000;
 }
 
-/* КОНТЕЙНЕР */
-.circles {
+/* КАРТОЧКИ */
+.cards {
   display: flex;
   justify-content: center;
   gap: 30px;
   margin-bottom: 40px;
 }
 
-/* ОБЩИЙ КРУГ */
-.circle {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
+.card {
+  width: 180px;
+  height: 200px;
+  border-radius: 20px;
   background: #ffffff;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  color: #000;
-  font-weight: bold;
+  justify-content: center;
+  position: relative;
   transition: 0.3s;
 }
 
-/* НЕОНОВЫЕ ОБВОДКИ */
-.sales {
-  border: 3px solid #00f0ff;
-  box-shadow: 0 0 10px #00f0ff, 0 0 25px #00f0ff;
+.card:hover {
+  transform: translateY(-5px);
 }
 
-.profit {
-  border: 3px solid #00ff88;
-  box-shadow: 0 0 10px #00ff88, 0 0 25px #00ff88;
+/* ПРОГРЕСС */
+.progress-box {
+  width: 120px;
+  height: 120px;
+  position: relative;
 }
 
-.clients {
-  border: 3px solid #ff00ff;
-  box-shadow: 0 0 10px #ff00ff, 0 0 25px #ff00ff;
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
-/* ТЕКСТ */
-.circle p {
+.progress-text h2 {
   margin: 0;
-  font-size: 14px;
+  font-size: 22px;
 }
 
-.circle h2 {
-  margin: 5px 0 0;
-  font-size: 26px;
+.progress-text p {
+  margin: 0;
+  font-size: 12px;
 }
 
-/* ХОВЕР */
-.circle:hover {
-  transform: scale(1.08);
+/* НЕОН */
+.sales canvas {
+  filter: drop-shadow(0 0 10px #00f0ff);
+}
+
+.profit canvas {
+  filter: drop-shadow(0 0 10px #00ff88);
+}
+
+.clients canvas {
+  filter: drop-shadow(0 0 10px #ff00ff);
 }
 
 /* ГРАФИК */
-canvas {
+#myChart {
   background: #f8fafc;
   border-radius: 12px;
-  padding: 15px;
+  padding: 10px;
 }
 </style>
 </head>
@@ -93,28 +99,45 @@ canvas {
 <div class="container">
   <h1>📈 Финансовые показатели</h1>
 
-  <div class="circles">
-    <div class="circle sales">
-      <p>Продажи</p>
-      <h2 id="sales">0</h2>
+  <div class="cards">
+
+    <div class="card sales">
+      <div class="progress-box">
+        <canvas id="salesChart"></canvas>
+        <div class="progress-text">
+          <h2 id="sales">0</h2>
+          <p>Продажи</p>
+        </div>
+      </div>
     </div>
 
-    <div class="circle profit">
-      <p>Прибыль</p>
-      <h2 id="profit">0</h2>
+    <div class="card profit">
+      <div class="progress-box">
+        <canvas id="profitChart"></canvas>
+        <div class="progress-text">
+          <h2 id="profit">0</h2>
+          <p>Прибыль</p>
+        </div>
+      </div>
     </div>
 
-    <div class="circle clients">
-      <p>Клиенты</p>
-      <h2 id="clients">0</h2>
+    <div class="card clients">
+      <div class="progress-box">
+        <canvas id="clientsChart"></canvas>
+        <div class="progress-text">
+          <h2 id="clients">0</h2>
+          <p>Клиенты</p>
+        </div>
+      </div>
     </div>
+
   </div>
 
   <canvas id="myChart"></canvas>
 </div>
 
 <script>
-/* АНИМАЦИЯ */
+/* АНИМАЦИЯ ЧИСЕЛ */
 function animateValue(id, start, end, duration, prefix="") {
   let obj = document.getElementById(id);
   let range = end - start;
@@ -136,10 +159,30 @@ animateValue("sales", 0, 1200, 1500);
 animateValue("profit", 0, 800, 1500, "$");
 animateValue("clients", 0, 45, 1500);
 
-/* ГРАФИК */
-const ctx = document.getElementById('myChart');
+/* ПРОГРЕСС */
+function createProgress(id, value, color) {
+  new Chart(document.getElementById(id), {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [value, 100 - value],
+        backgroundColor: [color, '#e5e7eb'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      cutout: '75%',
+      plugins: { legend: { display: false } }
+    }
+  });
+}
 
-new Chart(ctx, {
+createProgress('salesChart', 75, '#00f0ff');
+createProgress('profitChart', 60, '#00ff88');
+createProgress('clientsChart', 40, '#ff00ff');
+
+/* ГРАФИК */
+new Chart(document.getElementById('myChart'), {
   type: 'line',
   data: {
     labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт'],
@@ -149,21 +192,8 @@ new Chart(ctx, {
       borderColor: '#00f0ff',
       backgroundColor: 'rgba(0,240,255,0.2)',
       tension: 0.4,
-      fill: true,
-      pointRadius: 5,
-      pointBackgroundColor: '#00f0ff'
+      fill: true
     }]
-  },
-  options: {
-    plugins: {
-      legend: {
-        labels: { color: '#000' }
-      }
-    },
-    scales: {
-      x: { ticks: { color: '#000' } },
-      y: { ticks: { color: '#000' } }
-    }
   }
 });
 </script>
