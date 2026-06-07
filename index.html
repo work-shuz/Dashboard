@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>📊 Общая статистика</title>
+  <title>📊 Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -14,9 +14,35 @@
       padding: 20px;
     }
 
-    h1 {
-      text-align: center;
+    h1 { text-align: center; }
+
+    /* 🔐 ЛОГИН */
+    .login {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 100px;
+      gap: 10px;
     }
+
+    input {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      width: 200px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #3b82f6;
+      color: white;
+      cursor: pointer;
+    }
+
+    /* 📊 ДАШБОРД */
+    .dashboard { display: none; }
 
     .circles {
       display: flex;
@@ -34,27 +60,14 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      font-weight: bold;
     }
 
     .sales { background: #3b82f6; }
     .profit { background: #22c55e; }
     .clients { background: #f59e0b; }
 
-    .circle h2 {
-      font-size: 32px;
-      margin: 10px 0;
-    }
-
-    .up {
-      color: #4ade80;
-      font-size: 14px;
-    }
-
-    .down {
-      color: #f87171;
-      font-size: 14px;
-    }
+    .up { color: #4ade80; }
+    .down { color: #f87171; }
 
     canvas {
       margin-top: 40px;
@@ -66,6 +79,17 @@
 </head>
 
 <body>
+
+<!-- 🔐 ЛОГИН -->
+<div class="login" id="loginBlock">
+  <h2>Вход</h2>
+  <input type="text" id="login" placeholder="Логин">
+  <input type="password" id="password" placeholder="Пароль">
+  <button onclick="checkLogin()">Войти</button>
+</div>
+
+<!-- 📊 ДАШБОРД -->
+<div class="dashboard" id="dashboard">
 
 <h1>📈 Финансовые показатели</h1>
 
@@ -90,67 +114,95 @@
 
 <canvas id="myChart"></canvas>
 
+</div>
+
 <script>
-  // 📊 ГРАФИК
-  const ctx = document.getElementById('myChart');
+  // 🔐 ПРОСТОЙ ЛОГИН
+  function checkLogin() {
+    const login = document.getElementById('login').value;
+    const password = document.getElementById('password').value;
 
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт'],
-      datasets: [{
-        label: 'Продажи',
-        data: [12, 19, 8, 15, 22],
-        borderWidth: 2
-      }]
+    if (login === "admin" && password === "1234") {
+      document.getElementById('loginBlock').style.display = "none";
+      document.getElementById('dashboard').style.display = "block";
+
+      startDashboard();
+    } else {
+      alert("Неверный логин или пароль");
     }
-  });
+  }
 
-  // 🔢 формат чисел
-  function formatNumber(num) {
+  // 🚀 запуск дашборда
+  function startDashboard() {
+    animate("sales", 1500);
+    animate("profit", 1500);
+    animate("clients", 1500);
+    createChart();
+  }
+
+  // 🔢 формат
+  function format(num) {
     return num.toLocaleString();
   }
 
-  // 🔥 анимация
-  function animateValueFromElement(id, duration) {
+  // 🔥 анимация цифр
+  function animate(id, duration) {
     const el = document.getElementById(id);
-
     let text = el.innerText;
     let isMoney = text.includes('$');
-
-    const end = parseInt(text.replace(/\D/g, ''));
+    let end = parseInt(text.replace(/\D/g, ''));
 
     let startTime = null;
 
-    function animation(currentTime) {
-      if (!startTime) startTime = currentTime;
+    function step(t) {
+      if (!startTime) startTime = t;
+      let progress = t - startTime;
+      let value = Math.floor((progress / duration) * end);
 
-      const progress = currentTime - startTime;
-      const value = Math.floor((progress / duration) * end);
-
-      if (isMoney) {
-        el.innerText = "$" + formatNumber(value);
-      } else {
-        el.innerText = formatNumber(value);
-      }
+      el.innerText = isMoney ? "$" + format(value) : format(value);
 
       if (progress < duration) {
-        requestAnimationFrame(animation);
+        requestAnimationFrame(step);
       } else {
-        el.innerText = isMoney 
-          ? "$" + formatNumber(end) 
-          : formatNumber(end);
+        el.innerText = isMoney ? "$" + format(end) : format(end);
       }
     }
 
-    requestAnimationFrame(animation);
+    requestAnimationFrame(step);
   }
 
-  // 🚀 запуск
-  animateValueFromElement("sales", 1500);
-  animateValueFromElement("profit", 1500);
-  animateValueFromElement("clients", 1500);
+  // 📊 УЛУЧШЕННЫЙ ГРАФИК
+  function createChart() {
+    const ctx = document.getElementById('myChart').getContext('2d');
 
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт'],
+        datasets: [{
+          label: 'Продажи',
+          data: [12, 19, 8, 15, 22],
+          borderWidth: 3,
+          tension: 0.4, // 🔥 плавные линии
+          fill: true,   // 🔥 заливка
+          backgroundColor: 'rgba(59,130,246,0.2)'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            labels: { color: 'black' }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
 </script>
 
 </body>
