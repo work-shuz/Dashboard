@@ -2,18 +2,18 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>📊 Дашборд</title>
+<title>⚡ Neon Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body {
-  font-family: Arial;
   margin: 0;
-  background: #f1f5f9;
-  color: #0f172a;
+  font-family: Arial;
+  background: #0b1020;
+  color: white;
 }
 
-/* LOGIN */
+/* 🔐 LOGIN */
 #login {
   display: flex;
   height: 100vh;
@@ -22,11 +22,11 @@ body {
 }
 
 .login-box {
-  background: white;
+  background: #111827;
   padding: 30px;
   border-radius: 12px;
   text-align: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  box-shadow: 0 0 20px rgba(59,130,246,0.2);
 }
 
 input {
@@ -35,7 +35,7 @@ input {
   padding: 10px;
   width: 220px;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: none;
 }
 
 button {
@@ -47,7 +47,7 @@ button {
   cursor: pointer;
 }
 
-/* DASHBOARD */
+/* 📊 DASHBOARD */
 #dashboard {
   display: none;
   padding: 30px;
@@ -57,7 +57,7 @@ h1 {
   text-align: center;
 }
 
-/* КРУГИ */
+/* 🔵 NEON CIRCLES */
 .circles {
   display: flex;
   justify-content: center;
@@ -74,19 +74,42 @@ h1 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
-  color: white;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  background: #0f172a;
   transition: 0.3s;
 }
 
+/* 🔵 SALES */
+.sales {
+  box-shadow:
+    0 0 10px #3b82f6,
+    0 0 25px #3b82f6,
+    0 0 50px #3b82f6;
+}
+
+/* 🟢 PROFIT */
+.profit {
+  box-shadow:
+    0 0 10px #22c55e,
+    0 0 25px #22c55e,
+    0 0 50px #22c55e;
+}
+
+/* 🟠 CLIENTS */
+.clients {
+  box-shadow:
+    0 0 10px #f97316,
+    0 0 25px #f97316,
+    0 0 50px #f97316;
+}
+
 .circle:hover {
-  transform: translateY(-5px) scale(1.05);
+  transform: scale(1.1);
+  filter: brightness(1.3);
 }
 
 .circle p {
   margin: 0;
-  opacity: 0.9;
+  opacity: 0.8;
 }
 
 .circle h2 {
@@ -94,35 +117,22 @@ h1 {
   margin: 5px 0;
 }
 
-/* 🔥 ЦВЕТА */
-.sales {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-}
-
-.profit {
-  background: linear-gradient(135deg, #22c55e, #15803d);
-}
-
-.clients {
-  background: linear-gradient(135deg, #f97316, #c2410c);
-}
-
-/* ГРАФИК */
+/* 📈 CHART */
 canvas {
   margin: 50px auto 0;
   display: block;
   max-width: 800px;
-  background: white;
+  background: #111827;
   border-radius: 12px;
   padding: 15px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  box-shadow: 0 0 20px rgba(59,130,246,0.2);
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
+<!-- 🔐 LOGIN -->
 <div id="login">
   <div class="login-box">
     <h2>Вход</h2>
@@ -132,9 +142,9 @@ canvas {
   </div>
 </div>
 
-<!-- DASHBOARD -->
+<!-- 📊 DASHBOARD -->
 <div id="dashboard">
-  <h1>📈 Финансовые показатели</h1>
+  <h1>⚡ Neon Dashboard</h1>
 
   <div class="circles">
     <div class="circle sales">
@@ -157,7 +167,8 @@ canvas {
 </div>
 
 <script>
-/* LOGIN */
+
+/* 🔐 LOGIN */
 function login() {
   const user = document.getElementById('user').value;
   const pass = document.getElementById('pass').value;
@@ -171,14 +182,14 @@ function login() {
   }
 }
 
-/* АНИМАЦИЯ ЦИФР */
-function animateValue(id, start, end, duration, prefix = '') {
+/* 🔢 АНИМАЦИЯ */
+function animate(id, start, end, duration, prefix = '') {
   let startTime = null;
 
-  function step(timestamp) {
-    if (!startTime) startTime = timestamp;
+  function step(t) {
+    if (!startTime) startTime = t;
+    let progress = t - startTime;
 
-    let progress = timestamp - startTime;
     let value = Math.min(progress / duration * (end - start) + start, end);
 
     document.getElementById(id).innerText =
@@ -192,17 +203,17 @@ function animateValue(id, start, end, duration, prefix = '') {
   requestAnimationFrame(step);
 }
 
-/* ДАШБОРД */
+/* 🚀 START */
 function startDashboard() {
 
-  animateValue('sales', 0, 1200, 1200);
-  animateValue('profit', 0, 800, 1200, '$');
-  animateValue('clients', 0, 45, 1200);
+  animate('sales', 0, 1200, 1200);
+  animate('profit', 0, 800, 1200, '$');
+  animate('clients', 0, 45, 1200);
 
   const ctx = document.getElementById('myChart').getContext('2d');
 
   const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-  gradient.addColorStop(0, 'rgba(59,130,246,0.4)');
+  gradient.addColorStop(0, 'rgba(59,130,246,0.5)');
   gradient.addColorStop(1, 'rgba(59,130,246,0)');
 
   new Chart(ctx, {
@@ -223,20 +234,21 @@ function startDashboard() {
     options: {
       plugins: {
         legend: {
-          labels: { color: '#0f172a' }
+          labels: { color: 'white' }
         }
       },
       scales: {
         x: {
-          ticks: { color: '#0f172a' }
+          ticks: { color: 'white' }
         },
         y: {
-          ticks: { color: '#0f172a' }
+          ticks: { color: 'white' }
         }
       }
     }
   });
 }
+
 </script>
 
 </body>
