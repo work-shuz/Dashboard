@@ -8,8 +8,8 @@
   <style>
     body {
       font-family: Arial;
-      background: white;
-      color: black;
+      background: #0f172a;
+      color: white;
       margin: 0;
       padding: 20px;
     }
@@ -25,22 +25,35 @@
     }
 
     .circle {
-      background: #1e293b;
-      color: white;
       padding: 20px;
-      border-radius: 50%; /* 🔥 КРУГ */
+      border-radius: 50%;
       flex: 1;
       text-align: center;
-      aspect-ratio: 1 / 1; /* чтобы был идеальный круг */
+      aspect-ratio: 1/1;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      font-weight: bold;
     }
 
+    .sales { background: #3b82f6; }
+    .profit { background: #22c55e; }
+    .clients { background: #f59e0b; }
+
     .circle h2 {
-      font-size: 30px;
+      font-size: 32px;
       margin: 10px 0;
+    }
+
+    .up {
+      color: #4ade80;
+      font-size: 14px;
+    }
+
+    .down {
+      color: #f87171;
+      font-size: 14px;
     }
 
     canvas {
@@ -57,20 +70,22 @@
 <h1>📈 Финансовые показатели</h1>
 
 <div class="circles">
-  <div class="circle">
-    <p>Продажи</p>
+
+  <div class="circle sales">
+    <p>Продажи <span class="up">↑ 12%</span></p>
     <h2 id="sales">1200</h2>
   </div>
 
-  <div class="circle">
-    <p>Прибыль</p>
+  <div class="circle profit">
+    <p>Прибыль <span class="up">↑ 8%</span></p>
     <h2 id="profit">$800</h2>
   </div>
 
-  <div class="circle">
-    <p>Клиенты</p>
+  <div class="circle clients">
+    <p>Клиенты <span class="down">↓ 3%</span></p>
     <h2 id="clients">45</h2>
   </div>
+
 </div>
 
 <canvas id="myChart"></canvas>
@@ -91,17 +106,20 @@
     }
   });
 
-  // 🔥 АНИМАЦИЯ ЦИФР (с сохранением данных)
+  // 🔢 формат чисел
+  function formatNumber(num) {
+    return num.toLocaleString();
+  }
+
+  // 🔥 анимация
   function animateValueFromElement(id, duration) {
     const el = document.getElementById(id);
 
     let text = el.innerText;
     let isMoney = text.includes('$');
 
-    // вытаскиваем число
     const end = parseInt(text.replace(/\D/g, ''));
 
-    let start = 0;
     let startTime = null;
 
     function animation(currentTime) {
@@ -111,15 +129,17 @@
       const value = Math.floor((progress / duration) * end);
 
       if (isMoney) {
-        el.innerText = "$" + value;
+        el.innerText = "$" + formatNumber(value);
       } else {
-        el.innerText = value;
+        el.innerText = formatNumber(value);
       }
 
       if (progress < duration) {
         requestAnimationFrame(animation);
       } else {
-        el.innerText = isMoney ? "$" + end : end;
+        el.innerText = isMoney 
+          ? "$" + formatNumber(end) 
+          : formatNumber(end);
       }
     }
 
