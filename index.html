@@ -21,9 +21,10 @@ body {
 
 h1 {
   margin-bottom: 30px;
+  color: #000;
 }
 
-/* КОНТЕЙНЕР КРУГОВ */
+/* КОНТЕЙНЕР */
 .circles {
   display: flex;
   justify-content: center;
@@ -31,43 +32,35 @@ h1 {
   margin-bottom: 40px;
 }
 
-/* ОБЩИЙ СТИЛЬ */
+/* ОБЩИЙ КРУГ */
 .circle {
   width: 140px;
   height: 140px;
   border-radius: 50%;
+  background: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: white;
+  color: #000;
   font-weight: bold;
   transition: 0.3s;
 }
 
-/* НЕОНОВЫЕ ЗАЛИТЫЕ ЦВЕТА */
+/* НЕОНОВЫЕ ОБВОДКИ */
 .sales {
-  background: #00f0ff;
-  box-shadow: 
-    0 0 20px #00f0ff,
-    0 0 40px #00f0ff,
-    0 0 60px #00f0ff;
+  border: 3px solid #00f0ff;
+  box-shadow: 0 0 10px #00f0ff, 0 0 25px #00f0ff;
 }
 
 .profit {
-  background: #00ff88;
-  box-shadow: 
-    0 0 20px #00ff88,
-    0 0 40px #00ff88,
-    0 0 60px #00ff88;
+  border: 3px solid #00ff88;
+  box-shadow: 0 0 10px #00ff88, 0 0 25px #00ff88;
 }
 
 .clients {
-  background: #ff00ff;
-  box-shadow: 
-    0 0 20px #ff00ff,
-    0 0 40px #ff00ff,
-    0 0 60px #ff00ff;
+  border: 3px solid #ff00ff;
+  box-shadow: 0 0 10px #ff00ff, 0 0 25px #ff00ff;
 }
 
 /* ТЕКСТ */
@@ -81,7 +74,7 @@ h1 {
   font-size: 26px;
 }
 
-/* ЭФФЕКТ НАВЕДЕНИЯ */
+/* ХОВЕР */
 .circle:hover {
   transform: scale(1.08);
 }
