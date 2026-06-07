@@ -2,12 +2,13 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>📊Общая статистика</title>
+  <title>📊 Общая статистика</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     body {
       font-family: Arial;
-      background: #f1f5f9;
+      background: white;
       color: black;
       margin: 0;
       padding: 20px;
@@ -21,39 +22,25 @@
       display: flex;
       gap: 20px;
       margin-top: 20px;
-      justify-content: center;
-      flex-wrap: wrap;
     }
 
     .circle {
       background: #1e293b;
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-
+      color: white;
+      padding: 20px;
+      border-radius: 50%; /* 🔥 КРУГ */
+      flex: 1;
+      text-align: center;
+      aspect-ratio: 1 / 1; /* чтобы был идеальный круг */
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-
-      color: white;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-      transition: 0.3s;
-    }
-
-    .circle:hover {
-      transform: translateY(-5px);
     }
 
     .circle h2 {
-      font-size: 28px;
-      margin: 5px 0;
-    }
-
-    .circle p {
-      margin: 0;
-      font-size: 14px;
-      opacity: 0.8;
+      font-size: 30px;
+      margin: 10px 0;
     }
 
     canvas {
@@ -64,36 +51,87 @@
     }
   </style>
 </head>
+
 <body>
 
-<h1>📈Финансовые показатели</h1>
+<h1>📈 Финансовые показатели</h1>
 
 <div class="circles">
   <div class="circle">
     <p>Продажи</p>
-    <h2 id="sales">0</h2>
+    <h2 id="sales">1200</h2>
   </div>
 
   <div class="circle">
     <p>Прибыль</p>
-    <h2 id="profit">0</h2>
+    <h2 id="profit">$800</h2>
   </div>
 
   <div class="circle">
     <p>Клиенты</p>
-    <h2 id="clients">0</h2>
+    <h2 id="clients">45</h2>
   </div>
 </div>
 
 <canvas id="myChart"></canvas>
 
 <script>
-  // 🔥 АНИМАЦИЯ ЧИСЕЛ
-  function animateValue(id, end, duration) {
+  // 📊 ГРАФИК
+  const ctx = document.getElementById('myChart');
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт'],
+      datasets: [{
+        label: 'Продажи',
+        data: [12, 19, 8, 15, 22],
+        borderWidth: 2
+      }]
+    }
+  });
+
+  // 🔥 АНИМАЦИЯ ЦИФР (с сохранением данных)
+  function animateValueFromElement(id, duration) {
+    const el = document.getElementById(id);
+
+    let text = el.innerText;
+    let isMoney = text.includes('$');
+
+    // вытаскиваем число
+    const end = parseInt(text.replace(/\D/g, ''));
+
     let start = 0;
     let startTime = null;
 
-    function step(timestamp) {
-      if (!startTime) startTime = timestamp;
-      let progress = timestamp - startTime;
-      let value = Math
+    function animation(currentTime) {
+      if (!startTime) startTime = currentTime;
+
+      const progress = currentTime - startTime;
+      const value = Math.floor((progress / duration) * end);
+
+      if (isMoney) {
+        el.innerText = "$" + value;
+      } else {
+        el.innerText = value;
+      }
+
+      if (progress < duration) {
+        requestAnimationFrame(animation);
+      } else {
+        el.innerText = isMoney ? "$" + end : end;
+      }
+    }
+
+    requestAnimationFrame(animation);
+  }
+
+  // 🚀 запуск
+  animateValueFromElement("sales", 1500);
+  animateValueFromElement("profit", 1500);
+  animateValueFromElement("clients", 1500);
+
+</script>
+
+</body>
+</html>
