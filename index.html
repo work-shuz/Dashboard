@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: Arial;
-      background: white;
+      background: #f1f5f9;
       color: black;
       margin: 0;
       padding: 20px;
@@ -21,19 +21,39 @@
       display: flex;
       gap: 20px;
       margin-top: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
     }
 
     .circle {
       background: #1e293b;
-      padding: 20px;
-      border-radius: 10px;
-      flex: 1;
-      text-align: center;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      color: white;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      transition: 0.3s;
+    }
+
+    .circle:hover {
+      transform: translateY(-5px);
     }
 
     .circle h2 {
-      font-size: 30px;
-      margin: 10px 0;
+      font-size: 28px;
+      margin: 5px 0;
+    }
+
+    .circle p {
+      margin: 0;
+      font-size: 14px;
+      opacity: 0.8;
     }
 
     canvas {
@@ -41,6 +61,14 @@
       background: white;
       border-radius: 10px;
       padding: 10px;
+    }
+
+    /* Адаптив */
+    @media (max-width: 768px) {
+      .circles {
+        flex-direction: column;
+        align-items: center;
+      }
     }
   </style>
 </head>
@@ -82,3 +110,6 @@
     }
   });
 </script>
+
+</body>
+</html>
