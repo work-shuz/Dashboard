@@ -2,171 +2,177 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>⚡ Dashboard</title>
+<title>📊 Финансовый дашборд</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body {
-  margin: 0;
   font-family: Arial;
-  background: #f8fafc; /* БЕЛЫЙ ФОН */
-  color: #0f172a;
-}
-
-h1 {
+  background: #ffffff;
+  margin: 0;
+  padding: 20px;
   text-align: center;
 }
 
-/* КРУГИ */
+.container {
+  max-width: 1000px;
+  margin: auto;
+}
+
+h1 {
+  margin-bottom: 30px;
+}
+
+/* КОНТЕЙНЕР КРУГОВ */
 .circles {
   display: flex;
   justify-content: center;
   gap: 30px;
-  margin-top: 40px;
-  flex-wrap: wrap;
+  margin-bottom: 40px;
 }
 
+/* ОБЩИЙ СТИЛЬ */
 .circle {
-  width: 160px;
-  height: 160px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
-  background: #0f172a; /* ТЁМНЫЙ ДЛЯ НЕОНА */
   color: white;
+  font-weight: bold;
   transition: 0.3s;
 }
 
-/* 🔵 СИНИЙ НЕОН */
+/* НЕОНОВЫЕ ЗАЛИТЫЕ ЦВЕТА */
 .sales {
-  box-shadow:
-    0 0 10px #3b82f6,
-    0 0 25px #3b82f6,
-    0 0 50px #3b82f6,
-    0 10px 25px rgba(0,0,0,0.15); /* тень вниз */
+  background: #00f0ff;
+  box-shadow: 
+    0 0 20px #00f0ff,
+    0 0 40px #00f0ff,
+    0 0 60px #00f0ff;
 }
 
-/* 🟢 ЗЕЛЁНЫЙ НЕОН */
 .profit {
-  box-shadow:
-    0 0 10px #22c55e,
-    0 0 25px #22c55e,
-    0 0 50px #22c55e,
-    0 10px 25px rgba(0,0,0,0.15);
+  background: #00ff88;
+  box-shadow: 
+    0 0 20px #00ff88,
+    0 0 40px #00ff88,
+    0 0 60px #00ff88;
 }
 
-/* 🟠 ОРАНЖЕВЫЙ НЕОН */
 .clients {
-  box-shadow:
-    0 0 10px #f97316,
-    0 0 25px #f97316,
-    0 0 50px #f97316,
-    0 10px 25px rgba(0,0,0,0.15);
+  background: #ff00ff;
+  box-shadow: 
+    0 0 20px #ff00ff,
+    0 0 40px #ff00ff,
+    0 0 60px #ff00ff;
 }
 
-.circle:hover {
-  transform: scale(1.1);
-  filter: brightness(1.2);
-}
-
+/* ТЕКСТ */
 .circle p {
   margin: 0;
-  opacity: 0.8;
+  font-size: 14px;
 }
 
 .circle h2 {
-  font-size: 30px;
-  margin: 5px 0;
+  margin: 5px 0 0;
+  font-size: 26px;
+}
+
+/* ЭФФЕКТ НАВЕДЕНИЯ */
+.circle:hover {
+  transform: scale(1.08);
 }
 
 /* ГРАФИК */
 canvas {
-  margin: 60px auto 0;
-  display: block;
-  max-width: 800px;
-  background: white;
+  background: #f8fafc;
   border-radius: 12px;
   padding: 15px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 </style>
 </head>
 
 <body>
 
-<h1>📈 Финансовые показатели</h1>
+<div class="container">
+  <h1>📈 Финансовые показатели</h1>
 
-<div class="circles">
-  <div class="circle sales">
-    <p>Продажи</p>
-    <h2 id="sales">0</h2>
+  <div class="circles">
+    <div class="circle sales">
+      <p>Продажи</p>
+      <h2 id="sales">0</h2>
+    </div>
+
+    <div class="circle profit">
+      <p>Прибыль</p>
+      <h2 id="profit">0</h2>
+    </div>
+
+    <div class="circle clients">
+      <p>Клиенты</p>
+      <h2 id="clients">0</h2>
+    </div>
   </div>
 
-  <div class="circle profit">
-    <p>Прибыль</p>
-    <h2 id="profit">0</h2>
-  </div>
-
-  <div class="circle clients">
-    <p>Клиенты</p>
-    <h2 id="clients">0</h2>
-  </div>
+  <canvas id="myChart"></canvas>
 </div>
 
-<canvas id="myChart"></canvas>
-
 <script>
-function animate(id, start, end, duration, prefix = '') {
+/* АНИМАЦИЯ */
+function animateValue(id, start, end, duration, prefix="") {
+  let obj = document.getElementById(id);
+  let range = end - start;
   let startTime = null;
 
-  function step(t) {
-    if (!startTime) startTime = t;
-    let progress = t - startTime;
-
-    let value = Math.min(progress / duration * (end - start) + start, end);
-
-    document.getElementById(id).innerText =
-      prefix + Math.floor(value);
-
-    if (progress < duration) {
-      requestAnimationFrame(step);
-    }
+  function step(timestamp) {
+    if (!startTime) startTime = timestamp;
+    let progress = Math.min((timestamp - startTime) / duration, 1);
+    let value = Math.floor(progress * range + start);
+    obj.innerHTML = prefix + value;
+    if (progress < 1) requestAnimationFrame(step);
   }
 
   requestAnimationFrame(step);
 }
 
-window.onload = function() {
+/* ДАННЫЕ */
+animateValue("sales", 0, 1200, 1500);
+animateValue("profit", 0, 800, 1500, "$");
+animateValue("clients", 0, 45, 1500);
 
-  animate('sales', 0, 1200, 1200);
-  animate('profit', 0, 800, 1200, '$');
-  animate('clients', 0, 45, 1200);
+/* ГРАФИК */
+const ctx = document.getElementById('myChart');
 
-  const ctx = document.getElementById('myChart').getContext('2d');
-
-  const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-  gradient.addColorStop(0, 'rgba(59,130,246,0.4)');
-  gradient.addColorStop(1, 'rgba(59,130,246,0)');
-
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт'],
-      datasets: [{
-        label: 'Продажи',
-        data: [12, 19, 8, 15, 22],
-        borderColor: '#3b82f6',
-        backgroundColor: gradient,
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: '#3b82f6'
-      }]
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт'],
+    datasets: [{
+      label: 'Продажи',
+      data: [12, 19, 8, 15, 22],
+      borderColor: '#00f0ff',
+      backgroundColor: 'rgba(0,240,255,0.2)',
+      tension: 0.4,
+      fill: true,
+      pointRadius: 5,
+      pointBackgroundColor: '#00f0ff'
+    }]
+  },
+  options: {
+    plugins: {
+      legend: {
+        labels: { color: '#000' }
+      }
+    },
+    scales: {
+      x: { ticks: { color: '#000' } },
+      y: { ticks: { color: '#000' } }
     }
-  });
-};
+  }
+});
 </script>
 
 </body>
