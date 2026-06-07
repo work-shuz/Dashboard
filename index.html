@@ -9,7 +9,7 @@
 body {
   font-family: Arial;
   margin: 0;
-  background: #f1f5f9; /* светлый фон */
+  background: #f1f5f9;
   color: #0f172a;
 }
 
@@ -60,23 +60,23 @@ h1 {
 /* КРУГИ */
 .circles {
   display: flex;
-  justify-content: center; /* центрируем */
+  justify-content: center;
   gap: 30px;
   margin-top: 30px;
   flex-wrap: wrap;
 }
 
 .circle {
-  background: white;
-  border-radius: 50%;
   width: 160px;
   height: 160px;
+  border-radius: 50%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  color: white;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
   transition: 0.3s;
 }
 
@@ -86,12 +86,25 @@ h1 {
 
 .circle p {
   margin: 0;
-  color: #64748b;
+  opacity: 0.9;
 }
 
 .circle h2 {
   font-size: 30px;
   margin: 5px 0;
+}
+
+/* 🔥 ЦВЕТА */
+.sales {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.profit {
+  background: linear-gradient(135deg, #22c55e, #15803d);
+}
+
+.clients {
+  background: linear-gradient(135deg, #f97316, #c2410c);
 }
 
 /* ГРАФИК */
@@ -124,17 +137,17 @@ canvas {
   <h1>📈 Финансовые показатели</h1>
 
   <div class="circles">
-    <div class="circle">
+    <div class="circle sales">
       <p>Продажи</p>
       <h2 id="sales">0</h2>
     </div>
 
-    <div class="circle">
+    <div class="circle profit">
       <p>Прибыль</p>
       <h2 id="profit">0</h2>
     </div>
 
-    <div class="circle">
+    <div class="circle clients">
       <p>Клиенты</p>
       <h2 id="clients">0</h2>
     </div>
@@ -144,6 +157,7 @@ canvas {
 </div>
 
 <script>
+/* LOGIN */
 function login() {
   const user = document.getElementById('user').value;
   const pass = document.getElementById('pass').value;
@@ -157,16 +171,18 @@ function login() {
   }
 }
 
-/* АНИМАЦИЯ */
+/* АНИМАЦИЯ ЦИФР */
 function animateValue(id, start, end, duration, prefix = '') {
   let startTime = null;
 
   function step(timestamp) {
     if (!startTime) startTime = timestamp;
+
     let progress = timestamp - startTime;
     let value = Math.min(progress / duration * (end - start) + start, end);
 
-    document.getElementById(id).innerText = prefix + Math.floor(value);
+    document.getElementById(id).innerText =
+      prefix + Math.floor(value);
 
     if (progress < duration) {
       requestAnimationFrame(step);
@@ -176,12 +192,12 @@ function animateValue(id, start, end, duration, prefix = '') {
   requestAnimationFrame(step);
 }
 
-/* ЗАПУСК */
+/* ДАШБОРД */
 function startDashboard() {
 
-  animateValue('sales', 0, 1200, 1000);
-  animateValue('profit', 0, 800, 1000, '$');
-  animateValue('clients', 0, 45, 1000);
+  animateValue('sales', 0, 1200, 1200);
+  animateValue('profit', 0, 800, 1200, '$');
+  animateValue('clients', 0, 45, 1200);
 
   const ctx = document.getElementById('myChart').getContext('2d');
 
@@ -200,7 +216,8 @@ function startDashboard() {
         backgroundColor: gradient,
         fill: true,
         tension: 0.4,
-        pointBackgroundColor: '#3b82f6'
+        pointBackgroundColor: '#3b82f6',
+        pointRadius: 5
       }]
     },
     options: {
