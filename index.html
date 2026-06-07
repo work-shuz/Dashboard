@@ -26,9 +26,9 @@
     }
 
     .circle {
-      background: green;
-      width: 200px;
-      height: 200px;
+      background: #1e293b;
+      width: 150px;
+      height: 150px;
       border-radius: 50%;
 
       display: flex;
@@ -62,14 +62,6 @@
       border-radius: 10px;
       padding: 10px;
     }
-
-    /* Адаптив */
-    @media (max-width: 768px) {
-      .circles {
-        flex-direction: column;
-        align-items: center;
-      }
-    }
   </style>
 </head>
 <body>
@@ -79,37 +71,29 @@
 <div class="circles">
   <div class="circle">
     <p>Продажи</p>
-    <h2 id="sales">1200</h2>
+    <h2 id="sales">0</h2>
   </div>
 
   <div class="circle">
     <p>Прибыль</p>
-    <h2 id="profit">$800</h2>
+    <h2 id="profit">0</h2>
   </div>
 
   <div class="circle">
     <p>Клиенты</p>
-    <h2 id="clients">45</h2>
+    <h2 id="clients">0</h2>
   </div>
 </div>
 
 <canvas id="myChart"></canvas>
 
 <script>
-  const ctx = document.getElementById('myChart');
+  // 🔥 АНИМАЦИЯ ЧИСЕЛ
+  function animateValue(id, end, duration) {
+    let start = 0;
+    let startTime = null;
 
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт'],
-      datasets: [{
-        label: 'Продажи',
-        data: [12, 19, 8, 15, 22],
-        borderWidth: 2
-      }]
-    }
-  });
-</script>
-
-</body>
-</html>
+    function step(timestamp) {
+      if (!startTime) startTime = timestamp;
+      let progress = timestamp - startTime;
+      let value = Math
