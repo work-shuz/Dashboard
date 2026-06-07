@@ -13,43 +13,8 @@ body {
   color: white;
 }
 
-/* 🔐 LOGIN */
-#login {
-  display: flex;
-  height: 100vh;
-  justify-content: center;
-  align-items: center;
-}
-
-.login-box {
-  background: #111827;
-  padding: 30px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 0 20px rgba(59,130,246,0.2);
-}
-
-input {
-  display: block;
-  margin: 10px auto;
-  padding: 10px;
-  width: 220px;
-  border-radius: 6px;
-  border: none;
-}
-
-button {
-  padding: 10px 20px;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
 /* 📊 DASHBOARD */
 #dashboard {
-  display: none;
   padding: 30px;
 }
 
@@ -132,16 +97,6 @@ canvas {
 
 <body>
 
-<!-- 🔐 LOGIN -->
-<div id="login">
-  <div class="login-box">
-    <h2>Вход</h2>
-    <input type="text" id="user" placeholder="Логин">
-    <input type="password" id="pass" placeholder="Пароль">
-    <button onclick="login()">Войти</button>
-  </div>
-</div>
-
 <!-- 📊 DASHBOARD -->
 <div id="dashboard">
   <h1>⚡ Neon Dashboard</h1>
@@ -168,20 +123,6 @@ canvas {
 
 <script>
 
-/* 🔐 LOGIN */
-function login() {
-  const user = document.getElementById('user').value;
-  const pass = document.getElementById('pass').value;
-
-  if (user === 'admin' && pass === '1234') {
-    document.getElementById('login').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-    startDashboard();
-  } else {
-    alert('Неверный логин или пароль');
-  }
-}
-
 /* 🔢 АНИМАЦИЯ */
 function animate(id, start, end, duration, prefix = '') {
   let startTime = null;
@@ -203,8 +144,8 @@ function animate(id, start, end, duration, prefix = '') {
   requestAnimationFrame(step);
 }
 
-/* 🚀 START */
-function startDashboard() {
+/* 🚀 АВТОСТАРТ */
+window.onload = function() {
 
   animate('sales', 0, 1200, 1200);
   animate('profit', 0, 800, 1200, '$');
@@ -247,7 +188,8 @@ function startDashboard() {
       }
     }
   });
-}
+
+};
 
 </script>
 
