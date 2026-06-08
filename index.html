@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Live Dashboard</title>
+  <title>Учёт СИЗ — Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -29,6 +29,12 @@
       width: 100% !important;
       height: 400px !important;
     }
+
+    .error {
+      color: #ff6b6b;
+      text-align: center;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
@@ -36,45 +42,44 @@
 <div class="container">
   <div class="chart-card">
     <canvas id="chart"></canvas>
+    <div id="error" class="error"></div>
   </div>
 </div>
 
 <script>
-/*
-========================================
-1. https://docs.google.com/spreadsheets/d/1u-y7T_bLZreld5F5iRNOqbZbXAj-7jTF5huikeHYUN0/edit?gid=1854183606#gid=1854183606
-========================================
-*/
-const SHEET_ID = "PASTE_YOUR_ID_HERE";
+/* ================================
+   ТВОИ ДАННЫЕ
+================================ */
+const SHEET_ID = "1u-y7T_bLZreld5F5iRNOqbZbXAj-7jTF5huikeHYUN0";
+const SHEET_NAME = encodeURIComponent("Учёт СИЗ");
 
-/*
-========================================
-2. https://docs.google.com/spreadsheets/d/1u-y7T_bLZreld5F5iRNOqbZbXAj-7jTF5huikeHYUN0/edit?gid=1854183606#gid=1854183606
-========================================
-*/
-const SHEET_NAME = "Sheet1";
-
-/*
-========================================
-3. https://docs.google.com/spreadsheets/d/1u-y7T_bLZreld5F5iRNOqbZbXAj-7jTF5huikeHYUN0/edit?gid=1854183606#gid=1854183606
-========================================
-*/
+/* ================================
+   ЗАГРУЗКА ДАННЫХ
+================================ */
 async function loadData() {
-  const url = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
-  
-  const res = await fetch(url);
-  const data = await res.json();
+  try {
+    const url = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
+    const res = await fetch(url);
 
-  return data;
+    if (!res.ok) throw new Error("Ошибка загрузки данных");
+
+    const data = await res.json();
+    console.log("DATA:", data);
+
+    if (!data.length) throw new Error("Таблица пустая");
+
+    return data;
+
+  } catch (err) {
+    document.getElementById("error").innerText = err.message;
+    console.error(err);
+    return [];
+  }
 }
 
-/*
-========================================
-4. СОЗДАНИЕ ГРАФИКА
-Ожидается:
-date | value
-========================================
-*/
+/* ================================
+   СОЗДАНИЕ ГРАФИКА
+================================ */
 function createChart(labels, values) {
   const ctx = document.getElementById('chart').getContext('2d');
 
@@ -87,7 +92,7 @@ function createChart(labels, values) {
     data: {
       labels: labels,
       datasets: [{
-        label: 'Data',
+        label: 'Учёт СИЗ',
         data: values,
         borderColor: '#00f0ff',
         backgroundColor: gradient,
@@ -117,17 +122,18 @@ function createChart(labels, values) {
   });
 }
 
-/*
-========================================
-5. ИНИЦИАЛИЗАЦИЯ
-========================================
-*/
+/* ================================
+   ИНИЦИАЛИЗАЦИЯ
+================================ */
 async function init() {
   const rows = await loadData();
+  if (!rows.length) return;
 
-  // ожидаем колонки: date | value
-  const labels = rows.map(r => r.date);
-  const values = rows.map(r => Number(r.value));
+  // 🔥 автоматически берем первые 2 колонки
+  const keys = Object.keys(rows[0]);
+
+  const labels = rows.map(r => r[keys[0]]);
+  const values = rows.map(r => Number(r[keys[1]]) || 0);
 
   createChart(labels, values);
 }
