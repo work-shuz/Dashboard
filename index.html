@@ -1,9 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
 body {
   font-family: Arial;
   background: #0f172a;
   color: #ffffff;
   text-align: center;
   padding: 20px;
+}
+
+/* КОНТЕЙНЕР */
+.container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
 }
 
 /* КАРТОЧКА */
@@ -63,7 +80,9 @@ body {
 /* ХОВЕР */
 .card:hover {
   transform: translateY(-12px) scale(1.05);
-  box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+  box-shadow:
+    0 25px 60px rgba(0,0,0,0.7),
+    0 0 20px rgba(0,255,255,0.3);
 }
 
 .card:hover::before {
@@ -105,3 +124,121 @@ body {
   border-radius: 12px;
   padding: 10px;
 }
+</style>
+</head>
+
+<body>
+
+<h1>📊 Dashboard</h1>
+
+<div class="container">
+
+  <div class="card sales">
+    <canvas id="salesChart" width="100" height="100"></canvas>
+    <h2 id="sales">0</h2>
+    <div class="progress-text"><p>Sales</p></div>
+  </div>
+
+  <div class="card profit">
+    <canvas id="profitChart" width="100" height="100"></canvas>
+    <h2 id="profit">0</h2>
+    <div class="progress-text"><p>Profit</p></div>
+  </div>
+
+  <div class="card clients">
+    <canvas id="clientsChart" width="100" height="100"></canvas>
+    <h2 id="clients">0</h2>
+    <div class="progress-text"><p>Clients</p></div>
+  </div>
+
+</div>
+
+<canvas id="myChart" height="100"></canvas>
+
+<script>
+
+/* АНИМАЦИЯ ЧИСЕЛ */
+function animateValue(id, start, end, duration, prefix="") {
+  let obj = document.getElementById(id);
+  let startTime = null;
+
+  function easeOutQuad(t) {
+    return t * (2 - t);
+  }
+
+  function step(timestamp) {
+    if (!startTime) startTime = timestamp;
+    let progress = Math.min((timestamp - startTime) / duration, 1);
+    let eased = easeOutQuad(progress);
+
+    let value = Math.floor(eased * (end - start) + start);
+    obj.innerHTML = prefix + value;
+
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    }
+  }
+
+  requestAnimationFrame(step);
+}
+
+/* ЗАПУСК */
+animateValue("sales", 0, 1200, 1500);
+animateValue("profit", 0, 800, 1500, "$");
+animateValue("clients", 0, 45, 1500);
+
+/* КРУГОВЫЕ ПРОГРЕССЫ */
+function createProgress(id, value, color) {
+  new Chart(document.getElementById(id), {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [value, 100 - value],
+        backgroundColor: [color, '#1e293b'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      cutout: '75%',
+      plugins: {
+        tooltip: { enabled: false }
+      }
+    }
+  });
+}
+
+createProgress('salesChart', 80, '#00f0ff');
+createProgress('profitChart', 60, '#00ff88');
+createProgress('clientsChart', 40, '#ff00ff');
+
+/* ЛИНЕЙНЫЙ ГРАФИК */
+new Chart(document.getElementById('myChart'), {
+  type: 'line',
+  data: {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    datasets: [{
+      label: 'Revenue',
+      data: [100, 300, 250, 400, 350, 500],
+      borderColor: '#00f0ff',
+      backgroundColor: 'rgba(0,240,255,0.2)',
+      tension: 0.4,
+      fill: true
+    }]
+  },
+  options: {
+    plugins: {
+      legend: {
+        labels: { color: '#fff' }
+      }
+    },
+    scales: {
+      x: { ticks: { color: '#fff' } },
+      y: { ticks: { color: '#fff' } }
+    }
+  }
+});
+
+</script>
+
+</body>
+</html>
