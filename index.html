@@ -7,7 +7,6 @@
 
 <style>
 
-/* ===== ОСНОВА ===== */
 body {
   margin: 0;
   font-family: Arial;
@@ -15,27 +14,24 @@ body {
   color: white;
 }
 
-/* ===== HEADER ===== */
+/* HEADER */
 .header {
   height: 60px;
   display: flex;
   align-items: center;
   padding: 0 20px;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
 }
 
-/* КНОПКА МЕНЮ */
 .menu-btn {
   font-size: 24px;
   cursor: pointer;
 }
 
-/* ===== SIDEBAR ===== */
+/* SIDEBAR */
 .sidebar {
   position: fixed;
   top: 0;
-  left: -250px; /* скрыта */
+  left: -250px;
   width: 250px;
   height: 100%;
   background: #020617;
@@ -48,35 +44,23 @@ body {
   left: 0;
 }
 
-.sidebar h2 {
-  text-align: center;
-}
-
-.menu {
-  display: flex;
-  flex-direction: column;
-}
-
 .menu button {
   background: none;
   border: none;
   color: #cbd5f5;
   padding: 15px;
+  width: 100%;
   text-align: left;
   cursor: pointer;
-  transition: 0.3s;
 }
 
 .menu button:hover {
   background: rgba(255,255,255,0.1);
-  color: white;
 }
 
-/* ===== OVERLAY ===== */
+/* OVERLAY */
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.5);
@@ -90,36 +74,59 @@ body {
   visibility: visible;
 }
 
-/* ===== MAIN ===== */
+/* MAIN */
 .main {
   padding: 20px;
 }
 
-/* ===== СТРАНИЦЫ ===== */
-.page {
-  display: none;
-}
+/* PAGES */
+.page { display: none; }
+.page.active { display: block; }
 
-.page.active {
-  display: block;
-}
-
-/* ===== КАРТОЧКИ ===== */
+/* КАРТОЧКИ */
 .container {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
+  margin-bottom: 30px;
 }
 
 .card {
   width: 180px;
   height: 200px;
-  border-radius: 20px;
+  border-radius: 22px;
+
   background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.1);
+
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   flex-direction: column;
+
+  position: relative;
+  transition: 0.4s;
+}
+
+.card:hover {
+  transform: translateY(-10px) scale(1.05);
+}
+
+/* НЕОН */
+.sales canvas { filter: drop-shadow(0 0 12px #00f0ff); }
+.profit canvas { filter: drop-shadow(0 0 12px #00ff88); }
+.clients canvas { filter: drop-shadow(0 0 12px #ff00ff); }
+
+.card h2 {
+  margin: 5px 0;
+}
+
+/* ГРАФИК */
+canvas {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 10px;
 }
 
 </style>
@@ -127,24 +134,20 @@ body {
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
   <div class="menu-btn" onclick="toggleSidebar()">☰</div>
 </div>
 
 <!-- SIDEBAR -->
 <div id="sidebar" class="sidebar">
-  <h2>⚡ Menu</h2>
   <div class="menu">
     <button onclick="showPage('dashboard')">📊 Dashboard</button>
     <button onclick="showPage('analytics')">📈 Analytics</button>
   </div>
 </div>
 
-<!-- OVERLAY -->
 <div id="overlay" class="overlay" onclick="closeSidebar()"></div>
 
-<!-- MAIN -->
 <div class="main">
 
   <!-- DASHBOARD -->
@@ -152,9 +155,25 @@ body {
     <h1>📊 Dashboard</h1>
 
     <div class="container">
-      <div class="card"><h2>1200</h2><p>Sales</p></div>
-      <div class="card"><h2>$800</h2><p>Profit</p></div>
-      <div class="card"><h2>45</h2><p>Clients</p></div>
+
+      <div class="card sales">
+        <canvas id="salesChart" width="100" height="100"></canvas>
+        <h2>1200</h2>
+        <p>Sales</p>
+      </div>
+
+      <div class="card profit">
+        <canvas id="profitChart" width="100" height="100"></canvas>
+        <h2>$800</h2>
+        <p>Profit</p>
+      </div>
+
+      <div class="card clients">
+        <canvas id="clientsChart" width="100" height="100"></canvas>
+        <h2>45</h2>
+        <p>Clients</p>
+      </div>
+
     </div>
 
     <canvas id="chart1"></canvas>
@@ -170,29 +189,47 @@ body {
 
 <script>
 
-/* ===== SIDEBAR ===== */
+/* SIDEBAR */
 function toggleSidebar() {
-  document.getElementById("sidebar").classList.toggle("active");
-  document.getElementById("overlay").classList.toggle("active");
+  sidebar.classList.toggle("active");
+  overlay.classList.toggle("active");
 }
 
 function closeSidebar() {
-  document.getElementById("sidebar").classList.remove("active");
-  document.getElementById("overlay").classList.remove("active");
+  sidebar.classList.remove("active");
+  overlay.classList.remove("active");
 }
 
-/* ===== ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ ===== */
-function showPage(pageId) {
-  document.querySelectorAll('.page').forEach(p => {
-    p.classList.remove('active');
+/* PAGE */
+function showPage(id) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  closeSidebar();
+}
+
+/* НЕОНОВЫЕ КРУГИ */
+function createProgress(id, value, color) {
+  new Chart(document.getElementById(id), {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [value, 100 - value],
+        backgroundColor: [color, '#1e293b'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      cutout: '75%',
+      plugins: { tooltip: { enabled: false } }
+    }
   });
-
-  document.getElementById(pageId).classList.add('active');
-
-  closeSidebar(); // закрыть после выбора
 }
 
-/* ===== ГРАФИКИ ===== */
+createProgress('salesChart', 80, '#00f0ff');
+createProgress('profitChart', 60, '#00ff88');
+createProgress('clientsChart', 40, '#ff00ff');
+
+/* ГРАФИКИ */
 new Chart(document.getElementById('chart1'), {
   type: 'line',
   data: {
