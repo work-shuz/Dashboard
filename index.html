@@ -1,145 +1,107 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <title>Учёт СИЗ — Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #020617;
-      color: #fff;
-    }
-
-    .container {
-      padding: 20px;
-    }
-
-    .chart-card {
-      background: #0f172a;
-      border-radius: 16px;
-      padding: 20px;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    canvas {
-      width: 100% !important;
-      height: 400px !important;
-    }
-
-    .error {
-      color: #ff6b6b;
-      text-align: center;
-      margin-top: 20px;
-    }
-  </style>
-</head>
-<body>
-
-<div class="container">
-  <div class="chart-card">
-    <canvas id="chart"></canvas>
-    <div id="error" class="error"></div>
-  </div>
-</div>
-
-<script>
-/* ================================
-   ТВОИ ДАННЫЕ
-================================ */
-const SHEET_ID = "1u-y7T_bLZreld5F5iRNOqbZbXAj-7jTF5huikeHYUN0";
-const SHEET_NAME = encodeURIComponent("Учёт СИЗ");
-
-/* ================================
-   ЗАГРУЗКА ДАННЫХ
-================================ */
-async function loadData() {
-  try {
-    const url = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
-    const res = await fetch(url);
-
-    if (!res.ok) throw new Error("Ошибка загрузки данных");
-
-    const data = await res.json();
-    console.log("DATA:", data);
-
-    if (!data.length) throw new Error("Таблица пустая");
-
-    return data;
-
-  } catch (err) {
-    document.getElementById("error").innerText = err.message;
-    console.error(err);
-    return [];
-  }
+body {
+  font-family: Arial;
+  background: #0f172a;
+  color: #ffffff;
+  text-align: center;
+  padding: 20px;
 }
 
-/* ================================
-   СОЗДАНИЕ ГРАФИКА
-================================ */
-function createChart(labels, values) {
-  const ctx = document.getElementById('chart').getContext('2d');
+/* КАРТОЧКА */
+.card {
+  width: 180px;
+  height: 200px;
+  border-radius: 22px;
 
-  const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-  gradient.addColorStop(0, "rgba(0,240,255,0.5)");
-  gradient.addColorStop(1, "rgba(0,240,255,0)");
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
 
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Учёт СИЗ',
-        data: values,
-        borderColor: '#00f0ff',
-        backgroundColor: gradient,
-        tension: 0.4,
-        fill: true,
-        borderWidth: 3,
-        pointRadius: 4
-      }]
-    },
-    options: {
-      plugins: {
-        legend: {
-          labels: { color: '#fff' }
-        }
-      },
-      scales: {
-        x: {
-          ticks: { color: '#94a3b8' },
-          grid: { color: 'rgba(255,255,255,0.05)' }
-        },
-        y: {
-          ticks: { color: '#94a3b8' },
-          grid: { color: 'rgba(255,255,255,0.05)' }
-        }
-      }
-    }
-  });
+  border: 1px solid rgba(255,255,255,0.1);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  position: relative;
+  overflow: hidden;
+
+  transition: 0.4s ease;
 }
 
-/* ================================
-   ИНИЦИАЛИЗАЦИЯ
-================================ */
-async function init() {
-  const rows = await loadData();
-  if (!rows.length) return;
+/* НЕОНОВАЯ РАМКА */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 22px;
 
-  // 🔥 автоматически берем первые 2 колонки
-  const keys = Object.keys(rows[0]);
+  background: linear-gradient(120deg,
+    transparent,
+    rgba(0,255,255,0.6),
+    rgba(255,0,255,0.6),
+    transparent
+  );
 
-  const labels = rows.map(r => r[keys[0]]);
-  const values = rows.map(r => Number(r[keys[1]]) || 0);
-
-  createChart(labels, values);
+  opacity: 0;
+  filter: blur(12px);
+  transition: 0.5s;
 }
 
-init();
-</script>
+/* ВНУТРЕННЕЕ СВЕЧЕНИЕ */
+.card::after {
+  content: "";
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(0,240,255,0.15), transparent 60%);
+  top: -50%;
+  left: -50%;
+  opacity: 0;
+  transition: 0.5s;
+}
 
-</body>
-</html>
+/* ХОВЕР */
+.card:hover {
+  transform: translateY(-12px) scale(1.05);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.card:hover::after {
+  opacity: 1;
+}
+
+/* ТЕКСТ */
+.card h2 {
+  font-size: 28px;
+  margin: 5px 0;
+}
+
+.progress-text p {
+  margin: 0;
+  font-size: 12px;
+  color: #cbd5f5;
+}
+
+/* НЕОН ГРАФИКИ */
+.sales canvas {
+  filter: drop-shadow(0 0 12px #00f0ff);
+}
+
+.profit canvas {
+  filter: drop-shadow(0 0 12px #00ff88);
+}
+
+.clients canvas {
+  filter: drop-shadow(0 0 12px #ff00ff);
+}
+
+/* ГРАФИК */
+#myChart {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 10px;
+}
