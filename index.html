@@ -6,32 +6,84 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+
+/* ===== ОСНОВА ===== */
 body {
+  margin: 0;
   font-family: Arial;
   background: #0f172a;
-  color: #ffffff;
-  text-align: center;
-  padding: 20px;
+  color: white;
+  display: flex;
 }
 
-/* КОНТЕЙНЕР */
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 220px;
+  height: 100vh;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(255,255,255,0.1);
+  padding-top: 20px;
+  position: fixed;
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.menu button {
+  background: none;
+  border: none;
+  color: #cbd5f5;
+  padding: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 14px;
+}
+
+.menu button:hover {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+/* ===== КОНТЕНТ ===== */
+.main {
+  margin-left: 220px;
+  padding: 20px;
+  width: 100%;
+}
+
+/* ===== СТРАНИЦЫ ===== */
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+/* ===== КАРТОЧКИ ===== */
 .container {
   display: flex;
-  justify-content: center;
   gap: 20px;
   flex-wrap: wrap;
   margin-bottom: 40px;
 }
 
-/* КАРТОЧКА */
 .card {
   width: 180px;
   height: 200px;
   border-radius: 22px;
-
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255,255,255,0.05);
   backdrop-filter: blur(12px);
-
   border: 1px solid rgba(255,255,255,0.1);
 
   display: flex;
@@ -39,202 +91,113 @@ body {
   justify-content: center;
   flex-direction: column;
 
-  position: relative;
-  overflow: hidden;
-
-  transition: 0.4s ease;
+  transition: 0.4s;
 }
 
-/* НЕОНОВАЯ РАМКА */
-.card::before {
-  content: "";
-  position: absolute;
-  inset: -2px;
-  border-radius: 22px;
-
-  background: linear-gradient(120deg,
-    transparent,
-    rgba(0,255,255,0.6),
-    rgba(255,0,255,0.6),
-    transparent
-  );
-
-  opacity: 0;
-  filter: blur(12px);
-  transition: 0.5s;
-}
-
-/* ВНУТРЕННЕЕ СВЕЧЕНИЕ */
-.card::after {
-  content: "";
-  position: absolute;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(0,240,255,0.15), transparent 60%);
-  top: -50%;
-  left: -50%;
-  opacity: 0;
-  transition: 0.5s;
-}
-
-/* ХОВЕР */
 .card:hover {
-  transform: translateY(-12px) scale(1.05);
-  box-shadow:
-    0 25px 60px rgba(0,0,0,0.7),
-    0 0 20px rgba(0,255,255,0.3);
+  transform: translateY(-10px);
 }
 
-.card:hover::before {
-  opacity: 1;
-}
-
-.card:hover::after {
-  opacity: 1;
-}
-
-/* ТЕКСТ */
-.card h2 {
-  font-size: 28px;
-  margin: 5px 0;
-}
-
-.progress-text p {
-  margin: 0;
-  font-size: 12px;
-  color: #cbd5f5;
-}
-
-/* НЕОН ГРАФИКИ */
-.sales canvas {
-  filter: drop-shadow(0 0 12px #00f0ff);
-}
-
-.profit canvas {
-  filter: drop-shadow(0 0 12px #00ff88);
-}
-
-.clients canvas {
-  filter: drop-shadow(0 0 12px #ff00ff);
-}
-
-/* ГРАФИК */
-#myChart {
+/* ===== ГРАФИК ===== */
+canvas {
   background: rgba(255,255,255,0.05);
   border-radius: 12px;
   padding: 10px;
 }
+
 </style>
 </head>
 
 <body>
 
-<h1>📊 Dashboard</h1>
+<!-- ===== SIDEBAR ===== -->
+<div class="sidebar">
+  <h2>⚡ Panel</h2>
+  <div class="menu">
+    <button onclick="showPage('dashboard')">📊 Dashboard</button>
+    <button onclick="showPage('analytics')">📈 Analytics</button>
+  </div>
+</div>
 
-<div class="container">
+<!-- ===== MAIN ===== -->
+<div class="main">
 
-  <div class="card sales">
-    <canvas id="salesChart" width="100" height="100"></canvas>
-    <h2 id="sales">0</h2>
-    <div class="progress-text"><p>Sales</p></div>
+  <!-- ===== DASHBOARD ===== -->
+  <div id="dashboard" class="page active">
+    <h1>📊 Dashboard</h1>
+
+    <div class="container">
+      <div class="card">
+        <h2 id="sales">1200</h2>
+        <p>Sales</p>
+      </div>
+
+      <div class="card">
+        <h2 id="profit">$800</h2>
+        <p>Profit</p>
+      </div>
+
+      <div class="card">
+        <h2 id="clients">45</h2>
+        <p>Clients</p>
+      </div>
+    </div>
+
+    <canvas id="chart1"></canvas>
   </div>
 
-  <div class="card profit">
-    <canvas id="profitChart" width="100" height="100"></canvas>
-    <h2 id="profit">0</h2>
-    <div class="progress-text"><p>Profit</p></div>
-  </div>
+  <!-- ===== ANALYTICS ===== -->
+  <div id="analytics" class="page">
+    <h1>📈 Analytics</h1>
 
-  <div class="card clients">
-    <canvas id="clientsChart" width="100" height="100"></canvas>
-    <h2 id="clients">0</h2>
-    <div class="progress-text"><p>Clients</p></div>
+    <p>Здесь можно сделать:</p>
+    <ul>
+      <li>Фильтры</li>
+      <li>Доп графики</li>
+      <li>Разбивку по дням</li>
+    </ul>
+
+    <canvas id="chart2"></canvas>
   </div>
 
 </div>
 
-<canvas id="myChart" height="100"></canvas>
-
 <script>
 
-/* АНИМАЦИЯ ЧИСЕЛ */
-function animateValue(id, start, end, duration, prefix="") {
-  let obj = document.getElementById(id);
-  let startTime = null;
-
-  function easeOutQuad(t) {
-    return t * (2 - t);
-  }
-
-  function step(timestamp) {
-    if (!startTime) startTime = timestamp;
-    let progress = Math.min((timestamp - startTime) / duration, 1);
-    let eased = easeOutQuad(progress);
-
-    let value = Math.floor(eased * (end - start) + start);
-    obj.innerHTML = prefix + value;
-
-    if (progress < 1) {
-      requestAnimationFrame(step);
-    }
-  }
-
-  requestAnimationFrame(step);
-}
-
-/* ЗАПУСК */
-animateValue("sales", 0, 1200, 1500);
-animateValue("profit", 0, 800, 1500, "$");
-animateValue("clients", 0, 45, 1500);
-
-/* КРУГОВЫЕ ПРОГРЕССЫ */
-function createProgress(id, value, color) {
-  new Chart(document.getElementById(id), {
-    type: 'doughnut',
-    data: {
-      datasets: [{
-        data: [value, 100 - value],
-        backgroundColor: [color, '#1e293b'],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      cutout: '75%',
-      plugins: {
-        tooltip: { enabled: false }
-      }
-    }
+/* ===== ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ ===== */
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active');
   });
+
+  document.getElementById(pageId).classList.add('active');
 }
 
-createProgress('salesChart', 80, '#00f0ff');
-createProgress('profitChart', 60, '#00ff88');
-createProgress('clientsChart', 40, '#ff00ff');
-
-/* ЛИНЕЙНЫЙ ГРАФИК */
-new Chart(document.getElementById('myChart'), {
+/* ===== ГРАФИК 1 ===== */
+new Chart(document.getElementById('chart1'), {
   type: 'line',
   data: {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    labels: ['Jan','Feb','Mar','Apr','May','Jun'],
     datasets: [{
       label: 'Revenue',
-      data: [100, 300, 250, 400, 350, 500],
+      data: [100,300,250,400,350,500],
       borderColor: '#00f0ff',
       backgroundColor: 'rgba(0,240,255,0.2)',
-      tension: 0.4,
       fill: true
     }]
-  },
-  options: {
-    plugins: {
-      legend: {
-        labels: { color: '#fff' }
-      }
-    },
-    scales: {
-      x: { ticks: { color: '#fff' } },
-      y: { ticks: { color: '#fff' } }
-    }
+  }
+});
+
+/* ===== ГРАФИК 2 ===== */
+new Chart(document.getElementById('chart2'), {
+  type: 'bar',
+  data: {
+    labels: ['A','B','C','D'],
+    datasets: [{
+      label: 'Analytics',
+      data: [12,19,3,5],
+      backgroundColor: '#ff00ff'
+    }]
   }
 });
 
