@@ -13,40 +13,58 @@ body {
   font-family: Arial;
   background: #0f172a;
   color: white;
+}
+
+/* ===== HEADER ===== */
+.header {
+  height: 60px;
   display: flex;
+  align-items: center;
+  padding: 0 20px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+}
+
+/* КНОПКА МЕНЮ */
+.menu-btn {
+  font-size: 24px;
+  cursor: pointer;
 }
 
 /* ===== SIDEBAR ===== */
 .sidebar {
-  width: 220px;
-  height: 100vh;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-  border-right: 1px solid rgba(255,255,255,0.1);
-  padding-top: 20px;
   position: fixed;
+  top: 0;
+  left: -250px; /* скрыта */
+  width: 250px;
+  height: 100%;
+  background: #020617;
+  transition: 0.4s;
+  padding-top: 60px;
+  z-index: 1000;
+}
+
+.sidebar.active {
+  left: 0;
 }
 
 .sidebar h2 {
   text-align: center;
-  margin-bottom: 30px;
 }
 
 .menu {
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
 .menu button {
   background: none;
   border: none;
   color: #cbd5f5;
-  padding: 12px;
+  padding: 15px;
   text-align: left;
   cursor: pointer;
   transition: 0.3s;
-  font-size: 14px;
 }
 
 .menu button:hover {
@@ -54,11 +72,27 @@ body {
   color: white;
 }
 
-/* ===== КОНТЕНТ ===== */
-.main {
-  margin-left: 220px;
-  padding: 20px;
+/* ===== OVERLAY ===== */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s;
+}
+
+.overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ===== MAIN ===== */
+.main {
+  padding: 20px;
 }
 
 /* ===== СТРАНИЦЫ ===== */
@@ -75,34 +109,17 @@ body {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
-  margin-bottom: 40px;
 }
 
 .card {
   width: 180px;
   height: 200px;
-  border-radius: 22px;
+  border-radius: 20px;
   background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.1);
-
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   flex-direction: column;
-
-  transition: 0.4s;
-}
-
-.card:hover {
-  transform: translateY(-10px);
-}
-
-/* ===== ГРАФИК ===== */
-canvas {
-  background: rgba(255,255,255,0.05);
-  border-radius: 12px;
-  padding: 10px;
 }
 
 </style>
@@ -110,59 +127,59 @@ canvas {
 
 <body>
 
-<!-- ===== SIDEBAR ===== -->
-<div class="sidebar">
-  <h2>⚡ Panel</h2>
+<!-- HEADER -->
+<div class="header">
+  <div class="menu-btn" onclick="toggleSidebar()">☰</div>
+</div>
+
+<!-- SIDEBAR -->
+<div id="sidebar" class="sidebar">
+  <h2>⚡ Menu</h2>
   <div class="menu">
     <button onclick="showPage('dashboard')">📊 Dashboard</button>
     <button onclick="showPage('analytics')">📈 Analytics</button>
   </div>
 </div>
 
-<!-- ===== MAIN ===== -->
+<!-- OVERLAY -->
+<div id="overlay" class="overlay" onclick="closeSidebar()"></div>
+
+<!-- MAIN -->
 <div class="main">
 
-  <!-- ===== DASHBOARD ===== -->
+  <!-- DASHBOARD -->
   <div id="dashboard" class="page active">
     <h1>📊 Dashboard</h1>
 
     <div class="container">
-      <div class="card">
-        <h2 id="sales">1200</h2>
-        <p>Sales</p>
-      </div>
-
-      <div class="card">
-        <h2 id="profit">$800</h2>
-        <p>Profit</p>
-      </div>
-
-      <div class="card">
-        <h2 id="clients">45</h2>
-        <p>Clients</p>
-      </div>
+      <div class="card"><h2>1200</h2><p>Sales</p></div>
+      <div class="card"><h2>$800</h2><p>Profit</p></div>
+      <div class="card"><h2>45</h2><p>Clients</p></div>
     </div>
 
     <canvas id="chart1"></canvas>
   </div>
 
-  <!-- ===== ANALYTICS ===== -->
+  <!-- ANALYTICS -->
   <div id="analytics" class="page">
     <h1>📈 Analytics</h1>
-
-    <p>Здесь можно сделать:</p>
-    <ul>
-      <li>Фильтры</li>
-      <li>Доп графики</li>
-      <li>Разбивку по дням</li>
-    </ul>
-
     <canvas id="chart2"></canvas>
   </div>
 
 </div>
 
 <script>
+
+/* ===== SIDEBAR ===== */
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("active");
+  document.getElementById("overlay").classList.toggle("active");
+}
+
+function closeSidebar() {
+  document.getElementById("sidebar").classList.remove("active");
+  document.getElementById("overlay").classList.remove("active");
+}
 
 /* ===== ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ ===== */
 function showPage(pageId) {
@@ -171,9 +188,11 @@ function showPage(pageId) {
   });
 
   document.getElementById(pageId).classList.add('active');
+
+  closeSidebar(); // закрыть после выбора
 }
 
-/* ===== ГРАФИК 1 ===== */
+/* ===== ГРАФИКИ ===== */
 new Chart(document.getElementById('chart1'), {
   type: 'line',
   data: {
@@ -188,7 +207,6 @@ new Chart(document.getElementById('chart1'), {
   }
 });
 
-/* ===== ГРАФИК 2 ===== */
 new Chart(document.getElementById('chart2'), {
   type: 'bar',
   data: {
