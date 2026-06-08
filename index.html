@@ -23,14 +23,14 @@ body {
   margin-bottom: 40px;
 }
 
-/* КАРТОЧКА */
+/* КАРТОЧКИ (СТАРЫЙ СТИЛЬ) */
 .card {
   width: 180px;
   height: 200px;
-  border-radius: 22px;
+  border-radius: 20px;
 
   background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(10px);
 
   border: 1px solid rgba(255,255,255,0.1);
 
@@ -39,63 +39,18 @@ body {
   justify-content: center;
   flex-direction: column;
 
-  position: relative;
-  overflow: hidden;
-
-  transition: 0.4s ease;
+  transition: 0.3s;
 }
 
-/* НЕОНОВАЯ РАМКА */
-.card::before {
-  content: "";
-  position: absolute;
-  inset: -2px;
-  border-radius: 22px;
-
-  background: linear-gradient(120deg,
-    transparent,
-    rgba(0,255,255,0.6),
-    rgba(255,0,255,0.6),
-    transparent
-  );
-
-  opacity: 0;
-  filter: blur(12px);
-  transition: 0.5s;
-}
-
-/* ВНУТРЕННЕЕ СВЕЧЕНИЕ */
-.card::after {
-  content: "";
-  position: absolute;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(0,240,255,0.15), transparent 60%);
-  top: -50%;
-  left: -50%;
-  opacity: 0;
-  transition: 0.5s;
-}
-
-/* ХОВЕР */
+/* ХОВЕР ПРОСТОЙ */
 .card:hover {
-  transform: translateY(-12px) scale(1.05);
-  box-shadow:
-    0 25px 60px rgba(0,0,0,0.7),
-    0 0 20px rgba(0,255,255,0.3);
-}
-
-.card:hover::before {
-  opacity: 1;
-}
-
-.card:hover::after {
-  opacity: 1;
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.5);
 }
 
 /* ТЕКСТ */
 .card h2 {
-  font-size: 28px;
+  font-size: 26px;
   margin: 5px 0;
 }
 
@@ -105,7 +60,7 @@ body {
   color: #cbd5f5;
 }
 
-/* НЕОН ГРАФИКИ */
+/* НЕОН ДЛЯ КРУГОВ */
 .sales canvas {
   filter: drop-shadow(0 0 12px #00f0ff);
 }
@@ -211,29 +166,69 @@ createProgress('salesChart', 80, '#00f0ff');
 createProgress('profitChart', 60, '#00ff88');
 createProgress('clientsChart', 40, '#ff00ff');
 
-/* ЛИНЕЙНЫЙ ГРАФИК */
-new Chart(document.getElementById('myChart'), {
+/* ===== НОВЫЙ КРАСИВЫЙ ГРАФИК ===== */
+
+const ctx = document.getElementById('myChart').getContext('2d');
+
+/* ГРАДИЕНТ */
+const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+gradient.addColorStop(0, "rgba(0,240,255,0.5)");
+gradient.addColorStop(1, "rgba(0,240,255,0)");
+
+new Chart(ctx, {
   type: 'line',
   data: {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
     datasets: [{
       label: 'Revenue',
       data: [100, 300, 250, 400, 350, 500],
+
       borderColor: '#00f0ff',
-      backgroundColor: 'rgba(0,240,255,0.2)',
-      tension: 0.4,
-      fill: true
+      backgroundColor: gradient,
+
+      tension: 0.5,
+      fill: true,
+
+      pointBackgroundColor: '#00f0ff',
+      pointBorderColor: '#fff',
+      pointRadius: 5,
+      pointHoverRadius: 7,
+
+      borderWidth: 3
     }]
   },
   options: {
+    responsive: true,
+
     plugins: {
       legend: {
-        labels: { color: '#fff' }
+        labels: {
+          color: '#fff',
+          font: { size: 14 }
+        }
+      },
+      tooltip: {
+        backgroundColor: '#0f172a',
+        borderColor: '#00f0ff',
+        borderWidth: 1,
+        titleColor: '#fff',
+        bodyColor: '#cbd5f5'
       }
     },
+
     scales: {
-      x: { ticks: { color: '#fff' } },
-      y: { ticks: { color: '#fff' } }
+      x: {
+        ticks: { color: '#94a3b8' },
+        grid: {
+          color: 'rgba(255,255,255,0.05)'
+        }
+      },
+      y: {
+        ticks: { color: '#94a3b8' },
+        grid: {
+          color: 'rgba(255,255,255,0.05)'
+        }
+      }
     }
   }
 });
