@@ -2,285 +2,926 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Дашборд СФ</title>
 
 <style>
+* {
+  box-sizing: border-box;
+}
 
-/* ===== ОСНОВА ===== */
 body {
   margin: 0;
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   background: #0f172a;
-  color: white;
+  color: #fff;
 }
 
-/* ===== HEADER ===== */
-.header {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
+header {
+  padding: 22px;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-.menu-btn {
-  font-size: 24px;
-  cursor: pointer;
+header h1 {
+  margin: 0;
+  font-size: 26px;
 }
 
-/* ===== SIDEBAR ===== */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: -250px;
-  width: 250px;
-  height: 100%;
-  background: #020617;
-  transition: 0.4s;
-  padding-top: 60px;
-  z-index: 1000;
+header p {
+  margin: 6px 0 0;
+  color: #94a3b8;
 }
 
-.sidebar.active {
-  left: 0;
-}
-
-.menu button {
-  background: none;
-  border: none;
-  color: #cbd5f5;
-  padding: 15px;
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-}
-
-.menu button:hover {
-  background: rgba(255,255,255,0.1);
-}
-
-/* ===== OVERLAY ===== */
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  opacity: 0;
-  visibility: hidden;
-  transition: 0.3s;
-}
-
-.overlay.active {
-  opacity: 1;
-  visibility: visible;
-}
-
-/* ===== MAIN (ЦЕНТР) ===== */
-.main {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* ===== СТРАНИЦЫ ===== */
-.page {
-  display: none;
-  width: 100%;
-  max-width: 1100px;
-  text-align: center;
-}
-
-.page.active {
-  display: block;
-}
-
-/* ===== КАРТОЧКИ ===== */
 .container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin-bottom: 30px;
+  padding: 20px;
+}
+
+.settings {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.settings label {
+  display: block;
+  font-size: 13px;
+  color: #cbd5e1;
+  margin-bottom: 6px;
+}
+
+.settings input,
+.settings textarea,
+.settings select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: #020617;
+  color: white;
+  margin-bottom: 12px;
+}
+
+.settings textarea {
+  min-height: 70px;
+}
+
+button {
+  border: none;
+  background: linear-gradient(135deg, #38bdf8, #8b5cf6);
+  color: white;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.14);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
 }
 
 .card {
-  width: 180px;
-  height: 200px;
-  border-radius: 22px;
-
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.1);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-
-  text-align: center;
-  transition: 0.3s;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  padding: 18px;
 }
 
-.card:hover {
-  transform: translateY(-10px) scale(1.05);
+.card .title {
+  color: #94a3b8;
+  font-size: 13px;
 }
 
-/* НЕОН */
-.sales canvas { filter: drop-shadow(0 0 12px #00f0ff); }
-.profit canvas { filter: drop-shadow(0 0 12px #00ff88); }
-.clients canvas { filter: drop-shadow(0 0 12px #ff00ff); }
-
-.card canvas {
-  margin-bottom: 8px;
+.card .value {
+  margin-top: 12px;
+  font-size: 24px;
+  font-weight: bold;
 }
 
-/* ===== ГРАФИК ===== */
-canvas {
-  display: block;
-  margin: 0 auto;
-  max-width: 800px;
+.green { color: #34d399; }
+.yellow { color: #fbbf24; }
+.red { color: #fb7185; }
+.blue { color: #38bdf8; }
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.block {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.block h2 {
+  margin: 0 0 14px;
+  font-size: 20px;
+}
+
+.table-wrap {
+  overflow: auto;
+  max-height: 600px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+table {
   width: 100%;
-
-  background: rgba(255,255,255,0.05);
-  border-radius: 12px;
-  padding: 10px;
+  border-collapse: collapse;
+  min-width: 1200px;
 }
 
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  font-size: 13px;
+  text-align: left;
+}
+
+th {
+  background: #1e293b;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.amount {
+  text-align: right;
+  font-weight: bold;
+}
+
+.badge {
+  padding: 5px 9px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.accepted {
+  background: rgba(52,211,153,0.15);
+  color: #86efac;
+}
+
+.pending {
+  background: rgba(251,191,36,0.15);
+  color: #fde68a;
+}
+
+.rejected {
+  background: rgba(251,113,133,0.15);
+  color: #fecdd3;
+}
+
+.empty {
+  background: rgba(148,163,184,0.15);
+  color: #cbd5e1;
+}
+
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 220px 1fr 140px;
+  gap: 10px;
+  align-items: center;
+}
+
+.bar-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bar-bg {
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.1);
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #38bdf8, #34d399);
+  border-radius: 999px;
+}
+
+.report {
+  width: 100%;
+  min-height: 180px;
+  border-radius: 14px;
+  background: #020617;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 14px;
+  resize: vertical;
+}
+
+.log {
+  font-size: 13px;
+  color: #cbd5e1;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 900px) {
+  .cards,
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .bar-row {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="menu-btn" onclick="toggleSidebar()">☰</div>
-</div>
+<header>
+  <h1>Дашборд по счетам-фактурам</h1>
+  <p>Google Sheets → подразделения → суммы → статусы СФ</p>
+</header>
 
-<!-- SIDEBAR -->
-<div id="sidebar" class="sidebar">
-  <div class="menu">
-    <button onclick="showPage('dashboard')">📊 Dashboard</button>
-    <button onclick="showPage('analytics')">📈 Analytics</button>
+<div class="container">
+
+  <div class="settings">
+    <label>Ссылка на Google Sheets</label>
+    <input id="sheetUrl" value="https://docs.google.com/spreadsheets/d/1qx-X8tBA1jtepprPckk2tHd5_aMyDapanC2tkxG91I4/edit?gid=1868037557#gid=1868037557">
+
+    <label>Названия вкладок через запятую</label>
+    <textarea id="sheetNames">Бюджет, Технадзор, ОКК, Лаборатория, Техобследование, ПТО, Проектирование, Управление проектами, БиОТ, ВГО</textarea>
+
+    <button onclick="loadAll()">Загрузить данные</button>
+    <button class="secondary" onclick="exportCsv()">Экспорт CSV</button>
+    <button class="secondary" onclick="copyReport()">Скопировать отчёт</button>
   </div>
-</div>
 
-<!-- OVERLAY -->
-<div id="overlay" class="overlay" onclick="closeSidebar()"></div>
-
-<!-- MAIN -->
-<div class="main">
-
-  <!-- DASHBOARD -->
-  <div id="dashboard" class="page active">
-    <h1>📊 Dashboard</h1>
-
-    <div class="container">
-
-      <div class="card sales">
-        <canvas id="salesChart" width="100" height="100"></canvas>
-        <h2>1200</h2>
-        <p>Sales</p>
-      </div>
-
-      <div class="card profit">
-        <canvas id="profitChart" width="100" height="100"></canvas>
-        <h2>$800</h2>
-        <p>Profit</p>
-      </div>
-
-      <div class="card clients">
-        <canvas id="clientsChart" width="100" height="100"></canvas>
-        <h2>45</h2>
-        <p>Clients</p>
-      </div>
-
+  <div class="cards">
+    <div class="card">
+      <div class="title">Всего сумма</div>
+      <div class="value blue" id="totalAmount">0</div>
     </div>
 
-    <canvas id="chart1"></canvas>
+    <div class="card">
+      <div class="title">Количество СФ</div>
+      <div class="value" id="totalCount">0</div>
+    </div>
+
+    <div class="card">
+      <div class="title">Принято</div>
+      <div class="value green" id="acceptedAmount">0</div>
+    </div>
+
+    <div class="card">
+      <div class="title">Ожидает</div>
+      <div class="value yellow" id="pendingAmount">0</div>
+    </div>
+
+    <div class="card">
+      <div class="title">Проблемные</div>
+      <div class="value red" id="problemAmount">0</div>
+    </div>
   </div>
 
-  <!-- ANALYTICS -->
-  <div id="analytics" class="page">
-    <h1>📈 Analytics</h1>
-    <canvas id="chart2"></canvas>
+  <div class="filters">
+    <select id="monthFilter" onchange="applyFilters()">
+      <option value="">Все месяцы</option>
+    </select>
+
+    <select id="departmentFilter" onchange="applyFilters()">
+      <option value="">Все подразделения</option>
+    </select>
+
+    <select id="statusFilter" onchange="applyFilters()">
+      <option value="">Все статусы</option>
+      <option value="accepted">Принято</option>
+      <option value="pending">Ожидает</option>
+      <option value="rejected">Отклонено / ошибка</option>
+      <option value="empty">Без статуса</option>
+    </select>
+
+    <input id="searchInput" oninput="applyFilters()" placeholder="Поиск: клиент, ИНН, номер СФ">
+
+    <input id="minAmount" oninput="applyFilters()" placeholder="Сумма от">
+  </div>
+
+  <div class="block">
+    <h2>Суммы по подразделениям</h2>
+    <div class="bars" id="departmentBars"></div>
+  </div>
+
+  <div class="block">
+    <h2>Отчёт для руководства</h2>
+    <textarea class="report" id="report"></textarea>
+  </div>
+
+  <div class="block">
+    <h2>Таблица СФ</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Подразделение</th>
+            <th>Месяц</th>
+            <th>Организация</th>
+            <th>ИНН</th>
+            <th>Заказчик</th>
+            <th>Вид услуги</th>
+            <th>Договор</th>
+            <th>Сумма</th>
+            <th>Статус СФ</th>
+            <th>Номер СФ</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="10">Нажмите «Загрузить данные»</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>Журнал загрузки</h2>
+    <div class="log" id="log">Пока данные не загружены.</div>
   </div>
 
 </div>
 
 <script>
+const fmt = new Intl.NumberFormat("ru-RU");
+let allRows = [];
+let filteredRows = [];
 
-/* SIDEBAR */
-function toggleSidebar() {
-  sidebar.classList.toggle("active");
-  overlay.classList.toggle("active");
+const monthWords = [
+  "december", "декабрь",
+  "january", "январь",
+  "february", "февраль",
+  "march", "март",
+  "april", "апрель",
+  "may", "май",
+  "june", "июнь",
+  "july", "июль",
+  "august", "август",
+  "september", "сентябрь",
+  "october", "октябрь",
+  "november", "ноябрь"
+];
+
+function money(n) {
+  return fmt.format(Math.round(Number(n || 0))) + " сум";
 }
 
-function closeSidebar() {
-  sidebar.classList.remove("active");
-  overlay.classList.remove("active");
+function clean(v) {
+  return String(v ?? "").trim();
 }
 
-/* PAGE SWITCH */
-function showPage(id) {
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  closeSidebar();
+function low(v) {
+  return clean(v).toLowerCase();
 }
 
-/* НЕОНОВЫЕ КРУГИ */
-function createProgress(id, value, color) {
-  new Chart(document.getElementById(id), {
-    type: 'doughnut',
-    data: {
-      datasets: [{
-        data: [value, 100 - value],
-        backgroundColor: [color, '#1e293b'],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      cutout: '75%',
-      plugins: { tooltip: { enabled: false } }
+function parseAmount(v) {
+  if (v === null || v === undefined) return 0;
+
+  let s = String(v)
+    .replace(/\s/g, "")
+    .replace(/сум/gi, "")
+    .replace(/,/g, ".");
+
+  s = s.replace(/[^\d.-]/g, "");
+
+  const n = Number(s);
+  return isNaN(n) ? 0 : n;
+}
+
+function getSheetId(url) {
+  const m = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+  return m ? m[1] : "";
+}
+
+function csvUrl(sheetId, sheetName) {
+  return `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+}
+
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let quote = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    const n = text[i + 1];
+
+    if (c === '"' && quote && n === '"') {
+      cell += '"';
+      i++;
+    } else if (c === '"') {
+      quote = !quote;
+    } else if (c === "," && !quote) {
+      row.push(cell);
+      cell = "";
+    } else if ((c === "\n" || c === "\r") && !quote) {
+      if (cell !== "" || row.length) {
+        row.push(cell);
+        rows.push(row);
+        row = [];
+        cell = "";
+      }
+      if (c === "\r" && n === "\n") i++;
+    } else {
+      cell += c;
     }
-  });
+  }
+
+  if (cell !== "" || row.length) {
+    row.push(cell);
+    rows.push(row);
+  }
+
+  return rows;
 }
 
-createProgress('salesChart', 80, '#00f0ff');
-createProgress('profitChart', 60, '#00ff88');
-createProgress('clientsChart', 40, '#ff00ff');
+function isMonthText(v) {
+  const s = low(v);
+  return monthWords.some(m => s.includes(m)) || /20\d{2}/.test(s);
+}
 
-/* ГРАФИК 1 */
-new Chart(document.getElementById('chart1'), {
-  type: 'line',
-  data: {
-    labels: ['Jan','Feb','Mar','Apr','May','Jun'],
-    datasets: [{
-      label: 'Revenue',
-      data: [100,300,250,400,350,500],
-      borderColor: '#00f0ff',
-      backgroundColor: 'rgba(0,240,255,0.2)',
-      fill: true
-    }]
+function isSumText(v) {
+  const s = low(v);
+  return s.includes("сумма") || s.includes("summa") || s === "amount";
+}
+
+function isStatusText(v) {
+  const s = low(v);
+  return s.includes("статус") || s.includes("status");
+}
+
+function isNumberText(v) {
+  const s = low(v);
+  return s.includes("номер") || s.includes("№") || s.includes("сф") || s.includes("invoice");
+}
+
+function statusType(status) {
+  const s = low(status);
+
+  if (!s) return "empty";
+
+  if (
+    s.includes("прин") ||
+    s.includes("подпис") ||
+    s.includes("accepted") ||
+    s.includes("confirmed")
+  ) {
+    return "accepted";
   }
-});
 
-/* ГРАФИК 2 */
-new Chart(document.getElementById('chart2'), {
-  type: 'bar',
-  data: {
-    labels: ['A','B','C','D'],
-    datasets: [{
-      label: 'Analytics',
-      data: [12,19,3,5],
-      backgroundColor: '#ff00ff'
-    }]
+  if (
+    s.includes("ожид") ||
+    s.includes("отправ") ||
+    s.includes("жд") ||
+    s.includes("pending") ||
+    s.includes("sent")
+  ) {
+    return "pending";
   }
-});
 
+  if (
+    s.includes("откл") ||
+    s.includes("ошиб") ||
+    s.includes("аннули") ||
+    s.includes("reject") ||
+    s.includes("error")
+  ) {
+    return "rejected";
+  }
+
+  return "pending";
+}
+
+function badge(status) {
+  const type = statusType(status);
+  const text = clean(status) || "Без статуса";
+
+  return `<span class="badge ${type}">${text}</span>`;
+}
+
+function findColumn(rows, keywords) {
+  for (let r = 0; r < Math.min(rows.length, 8); r++) {
+    for (let c = 0; c < rows[r].length; c++) {
+      const s = low(rows[r][c]);
+      if (keywords.some(k => s.includes(k))) return c;
+    }
+  }
+  return -1;
+}
+
+function findMonthBlocks(rows) {
+  const blocks = [];
+
+  for (let r = 0; r < Math.min(rows.length, 8); r++) {
+    for (let c = 0; c < rows[r].length; c++) {
+      const value = clean(rows[r][c]);
+
+      if (!isMonthText(value)) continue;
+
+      let sumCol = -1;
+      let statusCol = -1;
+      let numberCol = -1;
+
+      for (let rr = r; rr < Math.min(r + 4, rows.length); rr++) {
+        for (let cc = c; cc < Math.min(c + 8, rows[rr].length); cc++) {
+          const cell = rows[rr][cc];
+
+          if (sumCol === -1 && isSumText(cell)) sumCol = cc;
+          if (statusCol === -1 && isStatusText(cell)) statusCol = cc;
+          if (numberCol === -1 && isNumberText(cell)) numberCol = cc;
+        }
+      }
+
+      if (sumCol !== -1) {
+        blocks.push({
+          month: value,
+          sumCol,
+          statusCol,
+          numberCol
+        });
+      }
+    }
+  }
+
+  const unique = [];
+  const used = new Set();
+
+  for (const b of blocks) {
+    const key = b.month + "|" + b.sumCol;
+    if (!used.has(key)) {
+      used.add(key);
+      unique.push(b);
+    }
+  }
+
+  return unique;
+}
+
+function analyzeSheet(rows, department) {
+  const orgCol = findColumn(rows, ["организация", "org"]);
+  const innCol = findColumn(rows, ["инн", "inn"]);
+  const clientCol = findColumn(rows, ["заказчик", "клиент", "client"]);
+  const serviceCol = findColumn(rows, ["вид услуги", "услуга", "service"]);
+  const contractCol = findColumn(rows, ["договор", "contract"]);
+
+  const blocks = findMonthBlocks(rows);
+
+  const result = [];
+
+  for (let r = 0; r < rows.length; r++) {
+    const row = rows[r];
+
+    const organization = clean(row[orgCol]);
+    const inn = clean(row[innCol]);
+    const customer = clean(row[clientCol]);
+    const service = clean(row[serviceCol]);
+    const contract = clean(row[contractCol]);
+
+    if (!organization && !inn && !customer && !service && !contract) continue;
+
+    for (const b of blocks) {
+      const amount = parseAmount(row[b.sumCol]);
+      const status = b.statusCol >= 0 ? clean(row[b.statusCol]) : "";
+      const sfNumber = b.numberCol >= 0 ? clean(row[b.numberCol]) : "";
+
+      if (!amount && !status && !sfNumber) continue;
+
+      result.push({
+        department,
+        month: b.month,
+        organization,
+        inn,
+        customer,
+        service,
+        contract,
+        amount,
+        status,
+        statusType: statusType(status),
+        sfNumber,
+        rowNumber: r + 1
+      });
+    }
+  }
+
+  return result;
+}
+
+async function loadAll() {
+  const sheetUrlInput = document.getElementById("sheetUrl").value.trim();
+  const sheetNamesInput = document.getElementById("sheetNames").value.trim();
+
+  localStorage.setItem("sf_sheet_url", sheetUrlInput);
+  localStorage.setItem("sf_sheet_names", sheetNamesInput);
+
+  const sheetId = getSheetId(sheetUrlInput);
+  const sheetNames = sheetNamesInput
+    .split(",")
+    .map(x => x.trim())
+    .filter(Boolean);
+
+  if (!sheetId) {
+    alert("Не удалось определить ID Google Sheets");
+    return;
+  }
+
+  allRows = [];
+  document.getElementById("log").textContent = "Загрузка...";
+
+  let log = "";
+
+  for (const name of sheetNames) {
+    try {
+      const url = csvUrl(sheetId, name);
+      const res = await fetch(url);
+
+      if (!res.ok) {
+        throw new Error("HTTP " + res.status);
+      }
+
+      const text = await res.text();
+
+      if (text.includes("<!DOCTYPE html>")) {
+        throw new Error("Нет доступа к вкладке или таблица не опубликована");
+      }
+
+      const rows = parseCSV(text);
+      const parsed = analyzeSheet(rows, name);
+
+      allRows.push(...parsed);
+
+      log += `✅ ${name}: найдено ${parsed.length} записей\n`;
+    } catch (e) {
+      log += `❌ ${name}: ${e.message}\n`;
+    }
+  }
+
+  document.getElementById("log").textContent = log;
+
+  fillFilters();
+  applyFilters();
+}
+
+function unique(arr) {
+  return [...new Set(arr.filter(Boolean))].sort((a,b) =>
+    String(a).localeCompare(String(b), "ru")
+  );
+}
+
+function fillSelect(id, values, firstText) {
+  const el = document.getElementById(id);
+  const old = el.value;
+
+  el.innerHTML = `<option value="">${firstText}</option>` +
+    values.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+
+  el.value = old;
+}
+
+function fillFilters() {
+  fillSelect("monthFilter", unique(allRows.map(x => x.month)), "Все месяцы");
+  fillSelect("departmentFilter", unique(allRows.map(x => x.department)), "Все подразделения");
+}
+
+function applyFilters() {
+  const month = document.getElementById("monthFilter").value;
+  const department = document.getElementById("departmentFilter").value;
+  const status = document.getElementById("statusFilter").value;
+  const q = low(document.getElementById("searchInput").value);
+  const minAmount = parseAmount(document.getElementById("minAmount").value);
+
+  filteredRows = allRows.filter(r => {
+    if (month && r.month !== month) return false;
+    if (department && r.department !== department) return false;
+    if (status && r.statusType !== status) return false;
+    if (minAmount && r.amount < minAmount) return false;
+
+    if (q) {
+      const text = low([
+        r.department,
+        r.month,
+        r.organization,
+        r.inn,
+        r.customer,
+        r.service,
+        r.contract,
+        r.status,
+        r.sfNumber
+      ].join(" "));
+
+      if (!text.includes(q)) return false;
+    }
+
+    return true;
+  });
+
+  render();
+}
+
+function isProblem(r) {
+  return (
+    r.statusType !== "accepted" ||
+    !r.status ||
+    !r.sfNumber ||
+    r.amount <= 0
+  );
+}
+
+function sum(rows) {
+  return rows.reduce((a,b) => a + Number(b.amount || 0), 0);
+}
+
+function render() {
+  const accepted = filteredRows.filter(r => r.statusType === "accepted");
+  const pending = filteredRows.filter(r => r.statusType === "pending");
+  const problems = filteredRows.filter(isProblem);
+
+  document.getElementById("totalAmount").textContent = money(sum(filteredRows));
+  document.getElementById("totalCount").textContent = fmt.format(filteredRows.length);
+  document.getElementById("acceptedAmount").textContent = money(sum(accepted));
+  document.getElementById("pendingAmount").textContent = money(sum(pending));
+  document.getElementById("problemAmount").textContent = money(sum(problems));
+
+  renderBars();
+  renderReport();
+  renderTable();
+}
+
+function renderBars() {
+  const byDep = {};
+
+  for (const r of filteredRows) {
+    byDep[r.department] = (byDep[r.department] || 0) + Number(r.amount || 0);
+  }
+
+  const entries = Object.entries(byDep).sort((a,b) => b[1] - a[1]);
+  const max = Math.max(...entries.map(x => x[1]), 1);
+
+  document.getElementById("departmentBars").innerHTML = entries.map(([name, value]) => {
+    const percent = Math.max(2, value / max * 100);
+
+    return `
+      <div class="bar-row">
+        <div class="bar-name">${escapeHtml(name)}</div>
+        <div class="bar-bg">
+          <div class="bar-fill" style="width:${percent}%"></div>
+        </div>
+        <div>${money(value)}</div>
+      </div>
+    `;
+  }).join("") || "Нет данных";
+}
+
+function renderReport() {
+  const accepted = filteredRows.filter(r => r.statusType === "accepted");
+  const pending = filteredRows.filter(r => r.statusType === "pending");
+  const rejected = filteredRows.filter(r => r.statusType === "rejected");
+  const empty = filteredRows.filter(r => r.statusType === "empty");
+  const problems = filteredRows.filter(isProblem);
+
+  const byDep = {};
+  for (const r of problems) {
+    byDep[r.department] = (byDep[r.department] || 0) + Number(r.amount || 0);
+  }
+
+  const topProblem = Object.entries(byDep).sort((a,b) => b[1] - a[1])[0];
+
+  document.getElementById("report").value =
+`Отчёт по выставленным счетам-фактурам
+
+Всего найдено: ${fmt.format(filteredRows.length)} записей
+Общая сумма: ${money(sum(filteredRows))}
+
+Принято:
+${fmt.format(accepted.length)} СФ на сумму ${money(sum(accepted))}
+
+Ожидает / отправлено:
+${fmt.format(pending.length)} СФ на сумму ${money(sum(pending))}
+
+Отклонено / ошибка:
+${fmt.format(rejected.length)} СФ на сумму ${money(sum(rejected))}
+
+Без статуса:
+${fmt.format(empty.length)} СФ на сумму ${money(sum(empty))}
+
+Проблемные СФ:
+${fmt.format(problems.length)} записей на сумму ${money(sum(problems))}
+
+Главная зона контроля:
+${topProblem ? topProblem[0] + " — " + money(topProblem[1]) : "Проблем не найдено"}
+
+Рекомендация:
+Проверить СФ без номера, без статуса, ожидающие подписи, отклонённые и ошибочные документы.`;
+}
+
+function renderTable() {
+  const tbody = document.getElementById("tableBody");
+
+  tbody.innerHTML = filteredRows.map(r => `
+    <tr>
+      <td>${escapeHtml(r.department)}</td>
+      <td>${escapeHtml(r.month)}</td>
+      <td>${escapeHtml(r.organization)}</td>
+      <td>${escapeHtml(r.inn)}</td>
+      <td>${escapeHtml(r.customer)}</td>
+      <td>${escapeHtml(r.service)}</td>
+      <td>${escapeHtml(r.contract)}</td>
+      <td class="amount">${money(r.amount)}</td>
+      <td>${badge(r.status)}</td>
+      <td>${escapeHtml(r.sfNumber)}</td>
+    </tr>
+  `).join("") || `<tr><td colspan="10">Нет данных</td></tr>`;
+}
+
+function exportCsv() {
+  const header = [
+    "Подразделение",
+    "Месяц",
+    "Организация",
+    "ИНН",
+    "Заказчик",
+    "Вид услуги",
+    "Договор",
+    "Сумма",
+    "Статус СФ",
+    "Номер СФ"
+  ];
+
+  const rows = filteredRows.map(r => [
+    r.department,
+    r.month,
+    r.organization,
+    r.inn,
+    r.customer,
+    r.service,
+    r.contract,
+    r.amount,
+    r.status,
+    r.sfNumber
+  ]);
+
+  const csv = [header, ...rows]
+    .map(row => row.map(v => `"${String(v ?? "").replace(/"/g, '""')}"`).join(","))
+    .join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "sf_dashboard_export.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function copyReport() {
+  const text = document.getElementById("report").value;
+  navigator.clipboard.writeText(text);
+  alert("Отчёт скопирован");
+}
+
+function escapeHtml(v) {
+  return String(v ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+window.addEventListener("load", () => {
+  const savedUrl = localStorage.getItem("sf_sheet_url");
+  const savedNames = localStorage.getItem("sf_sheet_names");
+
+  if (savedUrl) document.getElementById("sheetUrl").value = savedUrl;
+  if (savedNames) document.getElementById("sheetNames").value = savedNames;
+
+  loadAll();
+});
 </script>
 
 </body>
