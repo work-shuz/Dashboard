@@ -477,6 +477,42 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
   }
 }
 
+
+/* ===== CLEAN ONE-LINE FIRM POPUP ROWS ===== */
+.firm-picker-menu{
+  overflow-x:hidden;
+}
+.firm-picker-option{
+  min-height:46px;
+  padding:10px 12px;
+}
+.firm-picker-option span{
+  display:block;
+  flex:1;
+  min-width:0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  line-height:1.2;
+}
+.firm-picker-option input{
+  margin:0;
+}
+@media(min-width:1024px){
+  .firm-picker-menu{
+    min-width:420px;
+  }
+}
+@media(max-width:520px){
+  .firm-picker-option{
+    min-height:44px;
+    padding:10px;
+  }
+  .firm-picker-option span{
+    font-size:12px;
+  }
+}
+
 </style>
 
 </head>
