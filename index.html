@@ -14,6 +14,10 @@
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;min-height:100vh;font-family:Arial,sans-serif;color:var(--text);background:radial-gradient(circle at 15% 0%,rgba(56,189,248,.18),transparent 28%),radial-gradient(circle at 90% 10%,rgba(139,92,246,.22),transparent 30%),linear-gradient(180deg,#07111f,#0f172a 55%,#020617);padding-bottom:92px}
+body::before,
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1}
+body::before{opacity:0;transition:opacity .35s ease}
+body::after{opacity:0;transition:opacity .35s ease}
 .app{max-width:1180px;margin:0 auto}
 .top{position:sticky;top:0;z-index:50;padding:14px 16px;display:flex;gap:12px;align-items:center;background:rgba(7,17,31,.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
 .logo{width:46px;height:46px;border-radius:17px;display:grid;place-items:center;font-weight:900;background:linear-gradient(135deg,var(--blue),var(--violet))}
@@ -830,9 +834,35 @@ body[data-theme="aurora"]{
   --yellow:#fde68a;
   --red:#fb7185;
   background:
-    linear-gradient(135deg,rgba(34,211,238,.22),transparent 28%),
-    linear-gradient(225deg,rgba(167,139,250,.25),transparent 34%),
+    linear-gradient(135deg,rgba(34,211,238,.16),transparent 28%),
+    linear-gradient(225deg,rgba(167,139,250,.2),transparent 34%),
     linear-gradient(180deg,#08111f,#18203d 52%,#080b18);
+}
+body[data-theme="aurora"]::before{
+  opacity:.9;
+  background:
+    linear-gradient(90deg,rgba(125,211,252,.12) 1px,transparent 1px),
+    linear-gradient(0deg,rgba(125,211,252,.09) 1px,transparent 1px);
+  background-size:42px 42px;
+  mask-image:linear-gradient(90deg,transparent,black 20%,black 82%,transparent);
+}
+body[data-theme="aurora"]::after{
+  opacity:.75;
+  background:
+    radial-gradient(circle at 82% 22%,rgba(167,139,250,.26),transparent 20%),
+    conic-gradient(from 120deg at 15% 78%,transparent,rgba(34,211,238,.18),transparent 38%);
+}
+body[data-theme="aurora"] .panel,
+body[data-theme="aurora"] .stat,
+body[data-theme="aurora"] .task,
+body[data-theme="aurora"] .firm-card,
+body[data-theme="aurora"] .hero{
+  box-shadow:inset 0 0 0 1px rgba(125,211,252,.08),0 18px 46px rgba(4,10,25,.24);
+}
+body[data-theme="aurora"] .panel h3::before,
+body[data-theme="aurora"] .hero-kicker::before{
+  content:"// ";
+  color:var(--blue);
 }
 body[data-theme="mint"]{
   --panel:#10251f;
@@ -850,6 +880,27 @@ body[data-theme="mint"]{
     radial-gradient(circle at 88% 20%,rgba(56,189,248,.16),transparent 28%),
     linear-gradient(180deg,#071411,#12352c 54%,#07110f);
 }
+body[data-theme="mint"]::before{
+  opacity:.8;
+  background:
+    radial-gradient(circle at 18px 18px,rgba(134,239,172,.22) 2px,transparent 3px);
+  background-size:36px 36px;
+  mask-image:linear-gradient(180deg,transparent,black 18%,black 78%,transparent);
+}
+body[data-theme="mint"] .panel,
+body[data-theme="mint"] .stat,
+body[data-theme="mint"] .task,
+body[data-theme="mint"] .firm-card,
+body[data-theme="mint"] .hero{
+  border-radius:10px;
+  box-shadow:0 16px 42px rgba(0,40,28,.2);
+}
+body[data-theme="mint"] button{
+  border-radius:10px;
+}
+body[data-theme="mint"] .tag{
+  border-radius:8px;
+}
 body[data-theme="sunrise"]{
   --panel:#211827;
   --card:rgba(255,247,237,.08);
@@ -865,6 +916,26 @@ body[data-theme="sunrise"]{
     radial-gradient(circle at 18% 4%,rgba(251,191,36,.2),transparent 30%),
     radial-gradient(circle at 86% 14%,rgba(251,113,133,.22),transparent 30%),
     linear-gradient(180deg,#1b1020,#2c1d2e 54%,#100b16);
+}
+body[data-theme="sunrise"]::before{
+  opacity:.85;
+  background:
+    linear-gradient(115deg,transparent 0 38%,rgba(251,191,36,.12) 38% 40%,transparent 40% 100%),
+    linear-gradient(245deg,transparent 0 58%,rgba(251,113,133,.12) 58% 60%,transparent 60% 100%);
+  background-size:240px 180px;
+}
+body[data-theme="sunrise"]::after{
+  opacity:.5;
+  background:radial-gradient(ellipse at 72% 82%,rgba(251,191,36,.32),transparent 34%);
+}
+body[data-theme="sunrise"] .hero,
+body[data-theme="sunrise"] .panel{
+  border-radius:28px 10px 28px 10px;
+}
+body[data-theme="sunrise"] .stat,
+body[data-theme="sunrise"] .task,
+body[data-theme="sunrise"] .firm-card{
+  border-radius:22px 8px 22px 8px;
 }
 body[data-theme="paper"]{
   --panel:#ffffff;
@@ -882,6 +953,33 @@ body[data-theme="paper"]{
     linear-gradient(135deg,rgba(37,99,235,.08),transparent 30%),
     linear-gradient(225deg,rgba(5,150,105,.08),transparent 35%),
     linear-gradient(180deg,#fbfcff,#eef4ff 54%,#f7faf8);
+}
+body[data-theme="paper"]::before{
+  opacity:.8;
+  background:
+    linear-gradient(0deg,rgba(37,99,235,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(37,99,235,.04) 1px,transparent 1px);
+  background-size:26px 26px;
+}
+body[data-theme="paper"]::after{
+  opacity:.28;
+  background:
+    linear-gradient(135deg,transparent 0 46%,rgba(225,29,72,.18) 46% 47%,transparent 47% 100%);
+  background-size:180px 180px;
+}
+body[data-theme="paper"] .panel,
+body[data-theme="paper"] .task,
+body[data-theme="paper"] .firm-card,
+body[data-theme="paper"] .stat{
+  box-shadow:0 10px 24px rgba(30,41,59,.07);
+}
+body[data-theme="paper"] .panel,
+body[data-theme="paper"] .hero{
+  background:
+    linear-gradient(90deg,rgba(37,99,235,.035) 1px,transparent 1px),
+    linear-gradient(180deg,rgba(37,99,235,.035) 1px,transparent 1px),
+    rgba(255,255,255,.9);
+  background-size:22px 22px;
 }
 body[data-theme="aurora"] .top,
 body[data-theme="aurora"] .bottom,
@@ -912,21 +1010,27 @@ body[data-theme="paper"] .result{
   place-items:center;
   background:#07111f;
   transition:opacity .45s ease,visibility .45s ease;
+  animation:preloaderAutoHide .55s ease 1.05s forwards;
 }
 .preloader.hide{opacity:0;visibility:hidden;pointer-events:none}
+@keyframes preloaderAutoHide{
+  to{opacity:0;visibility:hidden;pointer-events:none}
+}
 .loader-mark{
-  width:84px;
-  height:84px;
-  border-radius:28px;
+  width:112px;
+  height:112px;
+  border-radius:34px;
   display:grid;
   place-items:center;
   font-weight:900;
   letter-spacing:.08em;
   color:white;
-  background:linear-gradient(135deg,var(--blue),var(--green),var(--yellow));
-  box-shadow:0 22px 60px rgba(56,189,248,.35);
+  background:white;
+  padding:14px;
+  box-shadow:0 24px 70px rgba(185,28,28,.26);
   animation:pulseMark 1.2s ease-in-out infinite;
 }
+.loader-mark img{width:100%;height:100%;object-fit:contain;display:block}
 @keyframes pulseMark{
   0%,100%{transform:scale(1)}
   50%{transform:scale(1.08)}
@@ -1146,7 +1250,7 @@ body[data-theme="light"] .contact-panel{
 
 </head>
 <body>
-<div id="preloader" class="preloader"><div class="loader-mark">WORK</div></div>
+<div id="preloader" class="preloader"><div class="loader-mark"><img src="es-logo.png" alt="ES"></div></div>
 <canvas id="creativeBg" class="creative-bg" aria-hidden="true"></canvas>
 <div class="app">
   <div class="top">
@@ -1158,11 +1262,11 @@ body[data-theme="light"] .contact-panel{
         <option value="en">EN</option>
       </select>
       <select id="themeSelect" class="theme-select" onchange="applyTheme(this.value)" aria-label="Тема">
-        <option value="dark">Ночь</option>
-        <option value="aurora">Аврора</option>
-        <option value="mint">Мята</option>
-        <option value="sunrise">Солнце</option>
-        <option value="paper">Светлая</option>
+        <option value="dark">Classic</option>
+        <option value="aurora">Blueprint</option>
+        <option value="mint">Mint Grid</option>
+        <option value="sunrise">Ember</option>
+        <option value="paper">Ledger</option>
       </select>
     </div>
     <button id="installBtn" class="install">Установить</button>
@@ -2515,6 +2619,7 @@ function initCreativeBackground(){
 }
 
 function creativeInit(){
+  setTimeout(()=>document.getElementById("preloader")?.classList.add("hide"), 450);
   const savedTheme = localStorage.getItem("creative_theme");
   applyTheme(savedTheme || "dark");
   const lang = localStorage.getItem("creative_lang") || "ru";
@@ -2524,11 +2629,11 @@ function creativeInit(){
   loadCreativeContacts();
   animateCounts();
   initCreativeBackground();
-  setTimeout(()=>document.getElementById("preloader")?.classList.add("hide"), 450);
 }
 
 window.addEventListener("load",()=>{initDefaultFirms();dueDate.value=todayStr();const bm=document.getElementById("bulkMonth"); if(bm) bm.value=toYMD(new Date()).slice(0,7); fillFirmSelects();render()});
 window.addEventListener("load", creativeInit);
+window.addEventListener("load",()=>setTimeout(()=>document.getElementById("preloader")?.classList.add("hide"), 900));
 </script>
 </body>
 </html>
