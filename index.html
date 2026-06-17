@@ -108,7 +108,7 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
   .bottom{
     position:fixed;
     left:18px;
-    top:190px;
+    top:244px;
     bottom:auto;
     right:auto;
     width:256px;
@@ -822,7 +822,7 @@ body[data-theme="light"] .result{
   background:#07111f;
   transition:opacity .45s ease,visibility .45s ease;
 }
-.preloader.hide{opacity:0;visibility:hidden}
+.preloader.hide{opacity:0;visibility:hidden;pointer-events:none}
 .loader-mark{
   width:84px;
   height:84px;
@@ -869,17 +869,7 @@ body[data-theme="light"] .result{
   overflow:hidden;
   border-radius:28px;
 }
-.hero-lab::after{
-  content:"";
-  position:absolute;
-  inset:auto 18px 18px auto;
-  width:150px;
-  height:150px;
-  border-radius:50%;
-  border:1px solid rgba(52,211,153,.28);
-  transform:rotate(22deg);
-  pointer-events:none;
-}
+.hero-lab::after{display:none}
 .hero-kicker{
   display:inline-flex;
   align-items:center;
@@ -905,7 +895,7 @@ body[data-theme="light"] .result{
 .creative-mini{
   border:1px solid var(--line);
   border-radius:18px;
-  padding:13px;
+  padding:11px 13px;
   background:rgba(255,255,255,.055);
 }
 .creative-mini b{
@@ -999,6 +989,60 @@ body[data-theme="light"] .contact-panel{
 }
 .contact-panel.active{display:block}
 .bottom{grid-template-columns:repeat(6,1fr)}
+@media (min-width:1024px){
+  .top-actions{
+    width:100%;
+    margin:10px 0 0;
+    justify-content:flex-start;
+  }
+  .lang-select{
+    flex:1;
+    min-width:0;
+  }
+  .icon-btn{
+    width:44px;
+    flex:0 0 44px;
+  }
+  .hero{
+    padding:18px 22px;
+    border-radius:20px;
+  }
+  .hero h2{
+    font-size:26px;
+    line-height:1.18;
+  }
+  .hero p{
+    max-width:920px;
+  }
+  .hero-actions{
+    margin-top:12px;
+  }
+  .hero-actions button{
+    padding:11px 14px;
+  }
+  .creative-strip{
+    gap:8px;
+    margin:10px 0 12px;
+  }
+  .creative-mini b{
+    font-size:15px;
+    margin-bottom:3px;
+  }
+  .stats{
+    margin:10px 0 12px;
+  }
+  .stat{
+    min-height:82px;
+    padding:15px;
+    border-radius:18px;
+  }
+  .stat b{
+    font-size:24px;
+  }
+  .panel{
+    border-radius:18px;
+  }
+}
 @media(max-width:900px){
   .creative-strip,.steps,.portfolio-grid,.ideas-grid{grid-template-columns:1fr}
   .top-actions{margin-left:0;width:100%}
@@ -1032,7 +1076,7 @@ body[data-theme="light"] .contact-panel{
         <h2 data-i18n="heroTitle">Календарь отчётов, платежей и спокойных дедлайнов</h2>
         <p data-i18n="heroText">Напоминания по фирмам, реквизиты, платежи, отчёты, Didox, зарплата и экспорт в Google Calendar. Теперь интерфейс живее: тема, язык, квиз и быстрый контакт всегда под рукой.</p>
         <div class="hero-actions">
-          <button onclick="showPage('ideas')" data-i18n="heroIdeas">Посмотреть идеи</button>
+          <button onclick="showPage('contacts')" data-i18n="heroIdeas">Контакты</button>
           <button class="secondary" onclick="toggleContactPanel()" data-i18n="heroContact">Быстрый контакт</button>
         </div>
       </div>
@@ -1052,7 +1096,8 @@ body[data-theme="light"] .contact-panel{
       <div class="grid">
         <div>
           <div class="panel">
-            <h3>Быстро добавить напоминание</h3>\n            <div class="small" style="margin-bottom:10px">Нажмите на строку «Выберите фирмы», затем отметьте нужные фирмы галочками. При повторе задачи создаются автоматически: каждый месяц — на 12 месяцев вперёд, квартал — на 8 кварталов, год — на 4 года.</div>
+            <h3>Быстро добавить напоминание</h3>
+            <div class="small" style="margin-bottom:10px">Нажмите на строку «Выберите фирмы», затем отметьте нужные фирмы галочками. При повторе задачи создаются автоматически: каждый месяц — на 12 месяцев вперёд, квартал — на 8 кварталов, год — на 4 года.</div>
             <div class="form-grid">
               <div><label>Фирма</label>
             <div id="firmPicker" class="firm-picker">
@@ -1199,29 +1244,21 @@ body[data-theme="light"] .contact-panel{
       </div>
     </section>
 
-    <section id="ideas" class="page">
+    <section id="contacts" class="page">
       <div class="panel">
-        <h3 data-i18n="ideasTitle">Креативный центр</h3>
+        <h3 data-i18n="ideasTitle">Контакты и заявка</h3>
+        <p class="small" data-i18n="contactsIntro">Здесь можно быстро подготовить текст заявки и сохранить Telegram/WhatsApp для кнопок связи.</p>
         <div class="steps">
-          <div class="step"><strong>01</strong><span data-i18n="step1">Заявка и дедлайн</span></div>
-          <div class="step"><strong>02</strong><span data-i18n="step2">Реквизиты и сумма</span></div>
-          <div class="step"><strong>03</strong><span data-i18n="step3">Напоминание в календаре</span></div>
-          <div class="step"><strong>04</strong><span data-i18n="step4">Готовый результат</span></div>
+          <div class="step"><strong>01</strong><span data-i18n="step1">Выбрать запрос</span></div>
+          <div class="step"><strong>02</strong><span data-i18n="step2">Скопировать текст</span></div>
+          <div class="step"><strong>03</strong><span data-i18n="step3">Отправить в Telegram/WhatsApp</span></div>
+          <div class="step"><strong>04</strong><span data-i18n="step4">Получить ответ</span></div>
         </div>
       </div>
 
       <div class="ideas-grid">
         <div class="idea-card">
-          <h3 data-i18n="portfolioTitle">Портфолио возможностей</h3>
-          <div class="portfolio-grid">
-            <div class="portfolio-card"><strong>Calendar</strong><span class="small">Сроки, повторы, ICS</span></div>
-            <div class="portfolio-card"><strong>Finance</strong><span class="small">Платежи, суммы, CSV</span></div>
-            <div class="portfolio-card"><strong>Firms</strong><span class="small">Реквизиты и быстрые копии</span></div>
-          </div>
-        </div>
-
-        <div class="idea-card">
-          <h3 data-i18n="quizTitle">Мини-квиз</h3>
+          <h3 data-i18n="quizTitle">Быстрая заявка</h3>
           <p class="small" data-i18n="quizText">Выберите, что нужно сделать, и сайт подготовит короткое сообщение для отправки.</p>
           <div class="quiz-options">
             <button type="button" onclick="setQuizChoice(this,'Нужен отчёт')">Отчёт</button>
@@ -1232,12 +1269,11 @@ body[data-theme="light"] .contact-panel{
           <textarea id="quizResult" readonly placeholder="Здесь появится текст заявки"></textarea>
           <div class="btns">
             <button onclick="copyQuizResult()" data-i18n="copyQuiz">Скопировать заявку</button>
-            <button class="secondary" onclick="toggleContactPanel()" data-i18n="openContact">Контакты</button>
+            <button class="secondary" onclick="toggleContactPanel()" data-i18n="openContact">Открыть контакты</button>
           </div>
         </div>
-      </div>
 
-      <div class="panel">
+      <div class="idea-card">
         <h3 data-i18n="contactSettings">Контакты для кнопок</h3>
         <div class="form-grid">
           <div><label>Telegram username</label><input id="telegramUser" placeholder="например: work_sh"></div>
@@ -1246,6 +1282,7 @@ body[data-theme="light"] .contact-panel{
         <div class="btns">
           <button onclick="saveCreativeContacts()" data-i18n="saveContacts">Сохранить контакты</button>
         </div>
+      </div>
       </div>
     </section>
 
@@ -1273,7 +1310,7 @@ body[data-theme="light"] .contact-panel{
   <button class="nav" onclick="showPage('list')" data-page="list"><span>📋</span>Список</button>
   <button class="nav" onclick="showPage('firms')" data-page="firms"><span>🏢</span>Реквизиты</button>
   <button class="nav" onclick="showPage('exports')" data-page="exports"><span>📤</span>Экспорт</button>
-  <button class="nav" onclick="showPage('ideas')" data-page="ideas"><span>✦</span>Идеи</button>
+  <button class="nav" onclick="showPage('contacts')" data-page="contacts"><span>☎</span>Контакты</button>
   <button class="nav" onclick="showPage('help')" data-page="help"><span>ℹ️</span>Помощь</button>
 </nav>
 
@@ -1358,11 +1395,11 @@ body[data-theme="light"] .contact-panel{
 <button class="contact-fab" onclick="toggleContactPanel()" title="Контакты">✆</button>
 <div id="contactPanel" class="contact-panel">
   <h3 style="margin:0 0 10px" data-i18n="quickContact">Быстрый контакт</h3>
-  <p class="small" data-i18n="quickContactText">Сначала сохраните Telegram или WhatsApp во вкладке “Идеи”.</p>
+  <p class="small" data-i18n="quickContactText">Сначала сохраните Telegram или WhatsApp во вкладке “Контакты”.</p>
   <div class="btns">
     <button onclick="openTelegram()">Telegram</button>
     <button class="secondary" onclick="openWhatsApp()">WhatsApp</button>
-    <button class="secondary" onclick="showPage('ideas')" data-i18n="settings">Настроить</button>
+    <button class="secondary" onclick="showPage('contacts')" data-i18n="settings">Настроить</button>
   </div>
 </div>
 
@@ -2148,34 +2185,37 @@ const creativeCopy = {
     heroKicker:"Рабочий центр для бухгалтерии",
     heroTitle:"Календарь отчётов, платежей и спокойных дедлайнов",
     heroText:"Напоминания по фирмам, реквизиты, платежи, отчёты, Didox, зарплата и экспорт в Google Calendar. Теперь интерфейс живее: тема, язык, квиз и быстрый контакт всегда под рукой.",
-    heroIdeas:"Посмотреть идеи", heroContact:"Быстрый контакт",
+    heroIdeas:"Контакты", heroContact:"Быстрый контакт",
     miniFirms:"фирм в системе", miniMode:"режим 24/7", miniLang:"языка интерфейса", miniLocal:"данные локально",
-    ideasTitle:"Креативный центр", step1:"Заявка и дедлайн", step2:"Реквизиты и сумма", step3:"Напоминание в календаре", step4:"Готовый результат",
-    portfolioTitle:"Портфолио возможностей", quizTitle:"Мини-квиз", quizText:"Выберите, что нужно сделать, и сайт подготовит короткое сообщение для отправки.",
-    copyQuiz:"Скопировать заявку", openContact:"Контакты", contactSettings:"Контакты для кнопок", saveContacts:"Сохранить контакты",
-    quickContact:"Быстрый контакт", quickContactText:"Сначала сохраните Telegram или WhatsApp во вкладке “Идеи”.", settings:"Настроить"
+    ideasTitle:"Контакты и заявка", contactsIntro:"Здесь можно быстро подготовить текст заявки и сохранить Telegram/WhatsApp для кнопок связи.",
+    step1:"Выбрать запрос", step2:"Скопировать текст", step3:"Отправить в Telegram/WhatsApp", step4:"Получить ответ",
+    portfolioTitle:"", quizTitle:"Быстрая заявка", quizText:"Выберите, что нужно сделать, и сайт подготовит короткое сообщение для отправки.",
+    copyQuiz:"Скопировать заявку", openContact:"Открыть контакты", contactSettings:"Контакты для кнопок", saveContacts:"Сохранить контакты",
+    quickContact:"Быстрый контакт", quickContactText:"Сначала сохраните Telegram или WhatsApp во вкладке “Контакты”.", settings:"Настроить"
   },
   uz:{
     heroKicker:"Buxgalteriya uchun ish markazi",
     heroTitle:"Hisobotlar, to‘lovlar va muddatlar kalendari",
     heroText:"Firmalar bo‘yicha eslatmalar, rekvizitlar, to‘lovlar, hisobotlar, Didox, ish haqi va Google Calendar eksporti. Endi mavzu, til, mini-kviz va tezkor aloqa ham bor.",
-    heroIdeas:"G‘oyalarni ko‘rish", heroContact:"Tezkor aloqa",
+    heroIdeas:"Kontaktlar", heroContact:"Tezkor aloqa",
     miniFirms:"firma tizimda", miniMode:"24/7 rejim", miniLang:"interfeys tili", miniLocal:"ma’lumot lokal",
-    ideasTitle:"Kreativ markaz", step1:"So‘rov va muddat", step2:"Rekvizit va summa", step3:"Kalendarda eslatma", step4:"Tayyor natija",
-    portfolioTitle:"Imkoniyatlar vitrini", quizTitle:"Mini-kviz", quizText:"Nima kerakligini tanlang, sayt yuborish uchun qisqa matn tayyorlaydi.",
-    copyQuiz:"So‘rovni nusxalash", openContact:"Kontaktlar", contactSettings:"Tugmalar uchun kontaktlar", saveContacts:"Kontaktlarni saqlash",
-    quickContact:"Tezkor aloqa", quickContactText:"Avval “G‘oyalar” bo‘limida Telegram yoki WhatsApp saqlang.", settings:"Sozlash"
+    ideasTitle:"Kontaktlar va so‘rov", contactsIntro:"Bu yerda so‘rov matnini tayyorlash va Telegram/WhatsApp tugmalari uchun kontaktlarni saqlash mumkin.",
+    step1:"So‘rovni tanlash", step2:"Matnni nusxalash", step3:"Telegram/WhatsAppga yuborish", step4:"Javob olish",
+    portfolioTitle:"", quizTitle:"Tezkor so‘rov", quizText:"Nima kerakligini tanlang, sayt yuborish uchun qisqa matn tayyorlaydi.",
+    copyQuiz:"So‘rovni nusxalash", openContact:"Kontaktlarni ochish", contactSettings:"Tugmalar uchun kontaktlar", saveContacts:"Kontaktlarni saqlash",
+    quickContact:"Tezkor aloqa", quickContactText:"Avval “Kontaktlar” bo‘limida Telegram yoki WhatsApp saqlang.", settings:"Sozlash"
   },
   en:{
     heroKicker:"Accounting work hub",
     heroTitle:"Reports, payments and calm deadlines",
     heroText:"Company reminders, details, payments, reports, Didox, salary tasks and Google Calendar export. The interface now has theme, language, quiz and quick contact tools.",
-    heroIdeas:"View ideas", heroContact:"Quick contact",
+    heroIdeas:"Contacts", heroContact:"Quick contact",
     miniFirms:"companies loaded", miniMode:"24/7 mode", miniLang:"interface languages", miniLocal:"local data",
-    ideasTitle:"Creative center", step1:"Request and deadline", step2:"Details and amount", step3:"Calendar reminder", step4:"Ready result",
-    portfolioTitle:"Feature portfolio", quizTitle:"Mini quiz", quizText:"Choose what you need and the site prepares a short message to send.",
-    copyQuiz:"Copy request", openContact:"Contacts", contactSettings:"Button contacts", saveContacts:"Save contacts",
-    quickContact:"Quick contact", quickContactText:"Save Telegram or WhatsApp in the Ideas tab first.", settings:"Settings"
+    ideasTitle:"Contacts and request", contactsIntro:"Prepare a request message and save Telegram/WhatsApp contacts for quick buttons.",
+    step1:"Choose request", step2:"Copy text", step3:"Send via Telegram/WhatsApp", step4:"Get a reply",
+    portfolioTitle:"", quizTitle:"Quick request", quizText:"Choose what you need and the site prepares a short message to send.",
+    copyQuiz:"Copy request", openContact:"Open contacts", contactSettings:"Button contacts", saveContacts:"Save contacts",
+    quickContact:"Quick contact", quickContactText:"Save Telegram or WhatsApp in the Contacts tab first.", settings:"Settings"
   }
 };
 
@@ -2243,13 +2283,13 @@ function toggleContactPanel(){
 
 function openTelegram(){
   const user = (localStorage.getItem("creative_telegram") || "").replace("@","");
-  if(!user){showPage("ideas");toast("Добавьте Telegram username");return}
+  if(!user){showPage("contacts");toast("Добавьте Telegram username");return}
   window.open("https://t.me/" + encodeURIComponent(user), "_blank");
 }
 
 function openWhatsApp(){
   const phone = (localStorage.getItem("creative_whatsapp") || "").replace(/\D/g,"");
-  if(!phone){showPage("ideas");toast("Добавьте номер WhatsApp");return}
+  if(!phone){showPage("contacts");toast("Добавьте номер WhatsApp");return}
   const text = encodeURIComponent(document.getElementById("quizResult")?.value || "Здравствуйте! Хочу уточнить детали.");
   window.open("https://wa.me/" + phone + "?text=" + text, "_blank");
 }
