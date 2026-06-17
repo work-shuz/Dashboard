@@ -2,927 +2,666 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Дашборд СФ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>Напоминания бухгалтера</title>
 
 <style>
-* {
-  box-sizing: border-box;
+:root{
+  --bg:#07111f;--panel:#0f172a;--card:rgba(255,255,255,.07);--line:rgba(255,255,255,.12);
+  --text:#f8fafc;--muted:#94a3b8;--blue:#38bdf8;--violet:#8b5cf6;--green:#34d399;--yellow:#fbbf24;--red:#fb7185;
 }
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0f172a;
-  color: #fff;
-}
-
-header {
-  padding: 22px;
-  background: linear-gradient(135deg, #0f172a, #1e293b);
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-header h1 {
-  margin: 0;
-  font-size: 26px;
-}
-
-header p {
-  margin: 6px 0 0;
-  color: #94a3b8;
-}
-
-.container {
-  padding: 20px;
-}
-
-.settings {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 18px;
-  padding: 16px;
-  margin-bottom: 20px;
-}
-
-.settings label {
-  display: block;
-  font-size: 13px;
-  color: #cbd5e1;
-  margin-bottom: 6px;
-}
-
-.settings input,
-.settings textarea,
-.settings select {
-  width: 100%;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: #020617;
-  color: white;
-  margin-bottom: 12px;
-}
-
-.settings textarea {
-  min-height: 70px;
-}
-
-button {
-  border: none;
-  background: linear-gradient(135deg, #38bdf8, #8b5cf6);
-  color: white;
-  padding: 12px 18px;
-  border-radius: 12px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-button.secondary {
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.14);
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 14px;
-  margin-bottom: 20px;
-}
-
-.card {
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 18px;
-  padding: 18px;
-}
-
-.card .title {
-  color: #94a3b8;
-  font-size: 13px;
-}
-
-.card .value {
-  margin-top: 12px;
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.green { color: #34d399; }
-.yellow { color: #fbbf24; }
-.red { color: #fb7185; }
-.blue { color: #38bdf8; }
-
-.filters {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.block {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 18px;
-  padding: 16px;
-  margin-bottom: 20px;
-}
-
-.block h2 {
-  margin: 0 0 14px;
-  font-size: 20px;
-}
-
-.table-wrap {
-  overflow: auto;
-  max-height: 600px;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.12);
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 1200px;
-}
-
-th, td {
-  padding: 10px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  font-size: 13px;
-  text-align: left;
-}
-
-th {
-  background: #1e293b;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.amount {
-  text-align: right;
-  font-weight: bold;
-}
-
-.badge {
-  padding: 5px 9px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: bold;
-  display: inline-block;
-}
-
-.accepted {
-  background: rgba(52,211,153,0.15);
-  color: #86efac;
-}
-
-.pending {
-  background: rgba(251,191,36,0.15);
-  color: #fde68a;
-}
-
-.rejected {
-  background: rgba(251,113,133,0.15);
-  color: #fecdd3;
-}
-
-.empty {
-  background: rgba(148,163,184,0.15);
-  color: #cbd5e1;
-}
-
-.bars {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.bar-row {
-  display: grid;
-  grid-template-columns: 220px 1fr 140px;
-  gap: 10px;
-  align-items: center;
-}
-
-.bar-name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.bar-bg {
-  height: 14px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.1);
-  overflow: hidden;
-}
-
-.bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #38bdf8, #34d399);
-  border-radius: 999px;
-}
-
-.report {
-  width: 100%;
-  min-height: 180px;
-  border-radius: 14px;
-  background: #020617;
-  color: white;
-  border: 1px solid rgba(255,255,255,0.12);
-  padding: 14px;
-  resize: vertical;
-}
-
-.log {
-  font-size: 13px;
-  color: #cbd5e1;
-  line-height: 1.6;
-  white-space: pre-wrap;
-}
-
-@media (max-width: 900px) {
-  .cards,
-  .filters {
-    grid-template-columns: 1fr;
-  }
-
-  .bar-row {
-    grid-template-columns: 1fr;
-  }
-}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;font-family:Arial,sans-serif;color:var(--text);background:radial-gradient(circle at 15% 0%,rgba(56,189,248,.18),transparent 28%),radial-gradient(circle at 90% 10%,rgba(139,92,246,.22),transparent 30%),linear-gradient(180deg,#07111f,#0f172a 55%,#020617);padding-bottom:92px}
+.app{max-width:1180px;margin:0 auto}
+.top{position:sticky;top:0;z-index:50;padding:14px 16px;display:flex;gap:12px;align-items:center;background:rgba(7,17,31,.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.logo{width:46px;height:46px;border-radius:17px;display:grid;place-items:center;font-weight:900;background:linear-gradient(135deg,var(--blue),var(--violet))}
+.top h1{font-size:19px;margin:0}.top p{margin:3px 0 0;color:var(--muted);font-size:12px}.install{margin-left:auto;display:none;background:rgba(255,255,255,.09);border:1px solid var(--line);color:white;border-radius:14px;padding:10px 12px;font-weight:800}
+.wrap{padding:16px}.page{display:none}.page.active{display:block}
+.hero{border:1px solid var(--line);border-radius:28px;background:linear-gradient(135deg,rgba(56,189,248,.14),rgba(139,92,246,.13)),rgba(255,255,255,.05);padding:20px;box-shadow:0 22px 60px rgba(0,0,0,.25)}
+.hero h2{margin:0 0 8px;font-size:25px}.hero p{margin:0;color:#cbd5e1;line-height:1.5;font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0}.stat{border:1px solid var(--line);background:var(--card);border-radius:22px;padding:15px}.stat span{display:block;color:var(--muted);font-size:12px;margin-bottom:8px}.stat b{font-size:22px}
+.grid{display:grid;grid-template-columns:1.05fr 1.6fr;gap:14px}.panel{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:24px;padding:16px;margin-bottom:14px}.panel h3{margin:0 0 12px;font-size:17px}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}.form-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+label{display:block;color:#cbd5e1;font-size:12px;margin:0 0 6px}
+input,select,textarea{width:100%;padding:13px;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:#020617;color:white;outline:none;font-size:15px}textarea{min-height:86px;resize:vertical}
+button{border:0;border-radius:16px;padding:13px 15px;color:white;font-weight:900;cursor:pointer;background:linear-gradient(135deg,var(--blue),var(--violet))}
+button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}button.danger{background:rgba(251,113,133,.16);border:1px solid rgba(251,113,133,.35)}
+.btns{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.filters{display:grid;grid-template-columns:1.5fr repeat(4,1fr);gap:10px;margin-bottom:12px}
+.task,.firm-card{border:1px solid var(--line);background:#020617;border-radius:18px;padding:13px;margin-bottom:10px}.task.done{opacity:.58}
+.task-title{font-weight:900;font-size:15px;line-height:1.35;margin-bottom:6px}.firm-title{font-weight:900;font-size:16px;margin-bottom:8px}
+.tag{display:inline-block;padding:5px 9px;border-radius:99px;font-size:11px;font-weight:900;background:rgba(56,189,248,.14);color:#bae6fd;margin:0 4px 6px 0}.tag.pay{background:rgba(251,191,36,.14);color:#fde68a}.tag.report{background:rgba(52,211,153,.14);color:#bbf7d0}.tag.bad{background:rgba(251,113,133,.16);color:#fecdd3}
+.small{color:var(--muted);font-size:12px;line-height:1.45}.result{white-space:pre-wrap;line-height:1.55;background:#020617;border:1px solid var(--line);border-radius:18px;padding:13px}
+.month-tools{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-top:10px}
+.calendar-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}.day-name{color:var(--muted);font-size:12px;text-align:center}
+.day{min-height:92px;border-radius:16px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.045);padding:8px}.day.today{border-color:rgba(56,189,248,.75);box-shadow:0 0 0 3px rgba(56,189,248,.08)}.day-num{font-weight:900;font-size:13px;margin-bottom:6px}
+.dot{height:6px;width:6px;border-radius:50%;display:inline-block;margin-right:3px;background:var(--blue)}.dot.pay{background:var(--yellow)}.dot.report{background:var(--green)}.dot.late{background:var(--red)}
+.event-line{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#dbeafe;margin-top:4px}
+.bottom{position:fixed;bottom:0;left:0;right:0;z-index:80;display:grid;grid-template-columns:repeat(5,1fr);background:rgba(7,17,31,.92);backdrop-filter:blur(18px);border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
+.nav{background:transparent;color:#94a3b8;padding:8px 4px;border-radius:16px;font-size:11px}.nav.active{background:rgba(255,255,255,.08);color:white}.nav span{display:block;font-size:20px;margin-bottom:2px}
+.toast{position:fixed;left:14px;right:14px;bottom:100px;z-index:99;display:none;background:#020617;border:1px solid var(--line);border-radius:18px;padding:13px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.collapsed-form{display:none;margin-top:12px}
+.firm-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 6px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.form-grid,.form-grid-3,.filters,.month-tools{grid-template-columns:1fr}.day{min-height:72px}}
+@media(max-width:520px){.hero h2{font-size:22px}.cal-grid{gap:5px}.day{min-height:64px;border-radius:13px;padding:6px}.event-line{display:none}.top h1{font-size:17px}.nav{font-size:10px}.nav span{font-size:18px}}
 </style>
 </head>
-
 <body>
-
-<header>
-  <h1>Дашборд по счетам-фактурам</h1>
-  <p>Google Sheets → подразделения → суммы → статусы СФ</p>
-</header>
-
-<div class="container">
-
-  <div class="settings">
-    <label>Ссылка на Google Sheets</label>
-    <input id="sheetUrl" value="https://docs.google.com/spreadsheets/d/1qx-X8tBA1jtepprPckk2tHd5_aMyDapanC2tkxG91I4/edit?gid=1868037557#gid=1868037557">
-
-    <label>Названия вкладок через запятую</label>
-    <textarea id="sheetNames">Бюджет, Технадзор, ОКК, Лаборатория, Техобследование, ПТО, Проектирование, Управление проектами, БиОТ, ВГО</textarea>
-
-    <button onclick="loadAll()">Загрузить данные</button>
-    <button class="secondary" onclick="exportCsv()">Экспорт CSV</button>
-    <button class="secondary" onclick="copyReport()">Скопировать отчёт</button>
+<div class="app">
+  <div class="top">
+    <div class="logo">⏰</div>
+    <div><h1>Напоминания бухгалтера</h1><p>Отчёты, платежи и реквизиты 5 фирм</p></div>
+    <button id="installBtn" class="install">Установить</button>
   </div>
 
-  <div class="cards">
-    <div class="card">
-      <div class="title">Всего сумма</div>
-      <div class="value blue" id="totalAmount">0</div>
-    </div>
+  <main class="wrap">
+    <section id="home" class="page active">
+      <div class="hero">
+        <h2>Календарь отчётов и платежей</h2>
+        <p>Напоминания по фирмам, реквизиты, платежи, отчёты, Didox, зарплата и экспорт в Google Calendar. Исправлено отображение дат без сдвига на 1 день.</p>
+      </div>
+      <div class="stats">
+        <div class="stat"><span>Сегодня</span><b id="statToday">0</b></div>
+        <div class="stat"><span>На 7 дней</span><b id="statWeek">0</b></div>
+        <div class="stat"><span>Просрочено</span><b id="statLate">0</b></div>
+        <div class="stat"><span>Фирм</span><b id="statFirms">0</b></div>
+      </div>
 
-    <div class="card">
-      <div class="title">Количество СФ</div>
-      <div class="value" id="totalCount">0</div>
-    </div>
+      <div class="grid">
+        <div>
+          <div class="panel">
+            <h3>Быстро добавить напоминание</h3>
+            <div class="form-grid">
+              <div><label>Фирма</label><select id="company"></select></div>
+              <div><label>Дата срока</label><input id="dueDate" type="date"></div>
+              <div><label>Тип</label><select id="type">
+                <option value="report">Отчёт</option><option value="pay">Платёж</option><option value="salary">Зарплата</option>
+                <option value="didox">Didox / ЭСФ</option><option value="stat">Статистика</option><option value="itpark">IT Park</option><option value="other">Другое</option>
+              </select></div>
+              <div><label>Повтор</label><select id="repeat">
+                <option value="none">Без повтора</option><option value="monthly">Каждый месяц</option><option value="quarterly">Каждый квартал</option><option value="yearly">Каждый год</option>
+              </select></div>
+              <div><label>Напомнить за</label><select id="remindBefore">
+                <option value="0">В день срока</option><option value="1">За 1 день</option><option value="3" selected>За 3 дня</option><option value="5">За 5 дней</option><option value="7">За 7 дней</option>
+              </select></div>
+              <div><label>Сумма платежа</label><input id="amount" inputmode="decimal" placeholder="если есть"></div>
+            </div>
+            <label style="margin-top:10px">Название задачи</label><input id="title" placeholder="Например: Оплатить НДС / Сдать отчёт">
+            <label style="margin-top:10px">Комментарий</label><textarea id="comment" placeholder="Период, реквизиты, ссылка, примечание"></textarea>
+            <div class="btns">
+              <button onclick="addTask()">Добавить</button>
+              <button class="secondary" onclick="addDefaultTemplates()">Добавить шаблоны</button>
+              <button class="secondary" onclick="requestNotify()">Включить уведомления</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="panel">
+            <div class="calendar-head">
+              <button class="secondary" onclick="moveMonth(-1)">←</button>
+              <h3 id="calTitle" style="margin:0">Календарь</h3>
+              <button class="secondary" onclick="moveMonth(1)">→</button>
+            </div>
+            <div class="cal-grid" id="calendar"></div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <div class="card">
-      <div class="title">Принято</div>
-      <div class="value green" id="acceptedAmount">0</div>
-    </div>
+    <section id="list" class="page">
+      <div class="panel">
+        <h3>Список напоминаний</h3>
+        <div class="filters">
+          <input id="search" oninput="render()" placeholder="Поиск">
+          <select id="filterCompany" onchange="render()"></select>
+          <select id="filterType" onchange="render()">
+            <option value="">Все типы</option><option value="report">Отчёты</option><option value="pay">Платежи</option><option value="salary">Зарплата</option><option value="didox">Didox / ЭСФ</option><option value="stat">Статистика</option><option value="itpark">IT Park</option><option value="other">Другое</option>
+          </select>
+          <select id="filterStatus" onchange="render()">
+            <option value="">Все</option><option value="active">Активные</option><option value="done">Выполненные</option><option value="late">Просроченные</option><option value="week">На 7 дней</option>
+          </select>
+          <button class="secondary" onclick="clearDone()">Удалить выполненные</button>
+        </div>
+        <div id="taskList"></div>
+      </div>
+    </section>
 
-    <div class="card">
-      <div class="title">Ожидает</div>
-      <div class="value yellow" id="pendingAmount">0</div>
-    </div>
+    
+<section id="firms" class="page">
+      <div class="panel">
+        <h3>Реквизиты фирм</h3>
+        <div class="small" style="margin-bottom:12px">Реквизиты уже загружены из файла: ESG-CONSTRUCTION PRO, WHITE WAY PROJECT GROUP, DIGITAL ENGINEERING SERVICES, DESIGN EXPERTISE PROJECTS, TE-COM PROJECT. Форма скрыта до нажатия кнопки «Добавить фирму».</div>
 
-    <div class="card">
-      <div class="title">Проблемные</div>
-      <div class="value red" id="problemAmount">0</div>
-    </div>
-  </div>
+        <div class="firm-toolbar">
+          <button onclick="openFirmForm()">Добавить фирму</button>
+          <button class="secondary" onclick="exportFirmsCsv()">Экспорт реквизитов CSV</button>
+          <button class="secondary" onclick="restoreDefaultFirms()">Восстановить реквизиты из файла</button>
+        </div>
 
-  <div class="filters">
-    <select id="monthFilter" onchange="applyFilters()">
-      <option value="">Все месяцы</option>
-    </select>
+        <div id="firmFormWrap" class="collapsed-form">
+          <div class="form-grid-3">
+            <div><label>Название фирмы</label><input id="firmName" placeholder='ООО "..."'></div>
+            <div><label>ИНН</label><input id="firmInn" placeholder="ИНН"></div>
+            <div><label>ОКЭД</label><input id="firmOked" placeholder="ОКЭД"></div>
+            <div><label>Расчётный счёт</label><input id="firmAccount" placeholder="2020..."></div>
+            <div><label>Банк</label><input id="firmBank" placeholder="Название банка"></div>
+            <div><label>МФО</label><input id="firmMfo" placeholder="МФО"></div>
+            <div><label>Директор</label><input id="firmDirector" placeholder="Ф.И.О. директора"></div>
+            <div><label>Телефон</label><input id="firmPhone" placeholder="+998..."></div>
+            <div><label>Адрес</label><input id="firmAddress" placeholder="Адрес"></div>
+          </div>
+          <label style="margin-top:10px">Примечание</label>
+          <textarea id="firmNote" placeholder="Налоговый режим, логин, ответственный, важные заметки"></textarea>
+          <div class="btns">
+            <button onclick="saveFirm()">Сохранить фирму</button>
+            <button class="secondary" onclick="clearFirmForm()">Очистить форму</button>
+            <button class="secondary" onclick="closeFirmForm()">Скрыть форму</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Сохранённые фирмы</h3>
+        <div id="firmList"></div>
+      </div>
+    </section>
 
-    <select id="departmentFilter" onchange="applyFilters()">
-      <option value="">Все подразделения</option>
-    </select>
+    <section id="exports" class="page">
 
-    <select id="statusFilter" onchange="applyFilters()">
-      <option value="">Все статусы</option>
-      <option value="accepted">Принято</option>
-      <option value="pending">Ожидает</option>
-      <option value="rejected">Отклонено / ошибка</option>
-      <option value="empty">Без статуса</option>
-    </select>
+      <div class="panel">
+        <h3>Настройка уведомлений для Google Calendar</h3>
+        <div class="month-tools">
+          <div><label>Время события</label><input id="globalCalTime" type="time" value="09:00"></div>
+          <div><label>Уведомление 1</label><select id="alarm1"><option value="0">В день события</option><option value="1">За 1 день</option><option value="3" selected>За 3 дня</option><option value="5">За 5 дней</option><option value="7">За 7 дней</option></select></div>
+          <div><label>Уведомление 2</label><select id="alarm2"><option value="">Нет</option><option value="0" selected>В день события</option><option value="1">За 1 день</option><option value="3">За 3 дня</option></select></div>
+          <div><label>Часовой пояс</label><input value="Asia/Tashkent" disabled></div>
+        </div>
+        <p class="small">Если после импорта Google Calendar всё равно не показывает уведомления, включите стандартные уведомления в настройках самого календаря: Настройки Google Calendar → выбранный календарь → Уведомления о событиях.</p>
+      </div>
 
-    <input id="searchInput" oninput="applyFilters()" placeholder="Поиск: клиент, ИНН, номер СФ">
 
-    <input id="minAmount" oninput="applyFilters()" placeholder="Сумма от">
-  </div>
+      <div class="panel">
+        <h3>Создать уведомления на месяц</h3>
+        <p class="small">Автоматически создаёт типовые задачи по всем 5 фирмам: Didox/ЭСФ, зарплата, отчёты, налоги, статистика и IT Park. Даты можно потом изменить вручную.</p>
+        <div class="month-tools">
+          <div><label>Месяц</label><input id="bulkMonth" type="month"></div>
+          <div><label>Напомнить за</label><select id="bulkRemind"><option value="1">1 день</option><option value="3" selected>3 дня</option><option value="5">5 дней</option><option value="7">7 дней</option></select></div>
+          <div><label>Повтор</label><select id="bulkRepeat"><option value="monthly" selected>Каждый месяц</option><option value="none">Без повтора</option></select></div>
+          <div><label>Время для календаря</label><input id="bulkTime" type="time" value="09:00"></div>
+        </div>
+        <div class="btns">
+          <button onclick="createMonthNotifications()">Создать задачи на месяц</button>
+          <button class="secondary" onclick="exportMonthICS()">ICS с уведомлениями на месяц</button>
+          <button class="secondary" onclick="copyMonthPlan()">Скопировать план месяца</button>
+        </div>
+      </div>
 
-  <div class="block">
-    <h2>Суммы по подразделениям</h2>
-    <div class="bars" id="departmentBars"></div>
-  </div>
+      <div class="panel">
+        <h3>Экспорт</h3>
+        <p class="small">ICS можно импортировать в Google Calendar: Google Calendar → Настройки → Импорт → выберите файл.</p>
+        <div class="btns">
+          <button onclick="exportICS()">Скачать ICS с уведомлениями</button>
+          <button class="secondary" onclick="exportCSV()">Скачать CSV напоминаний</button>
+          <button class="secondary" onclick="copyWeekReport()">Скопировать отчёт на неделю</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Отчёт на неделю</h3>
+        <textarea id="weekReport" readonly></textarea>
+      </div>
+    </section>
 
-  <div class="block">
-    <h2>Отчёт для руководства</h2>
-    <textarea class="report" id="report"></textarea>
-  </div>
-
-  <div class="block">
-    <h2>Таблица СФ</h2>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Подразделение</th>
-            <th>Месяц</th>
-            <th>Организация</th>
-            <th>ИНН</th>
-            <th>Заказчик</th>
-            <th>Вид услуги</th>
-            <th>Договор</th>
-            <th>Сумма</th>
-            <th>Статус СФ</th>
-            <th>Номер СФ</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody">
-          <tr><td colspan="10">Нажмите «Загрузить данные»</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="block">
-    <h2>Журнал загрузки</h2>
-    <div class="log" id="log">Пока данные не загружены.</div>
-  </div>
-
+    <section id="help" class="page">
+      <div class="panel">
+        <h3>Как пользоваться</h3>
+        <div class="small">
+          1. В разделе «Реквизиты» добавьте 5 фирм.<br>
+          2. На главной добавляйте платежи и отчёты по каждой фирме.<br>
+          3. Нажмите «Добавить шаблоны», чтобы создать типовые ежемесячные задачи.<br>
+          4. Скачайте ICS и импортируйте в Google Calendar для системных напоминаний.<br>
+          5. Реквизиты можно копировать и использовать в платежах, письмах и отчётах.
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Важно</h3>
+        <p class="small">Шаблонные сроки нужно проверить и настроить под реальные требования вашей организации, налоговый режим и отчётность.</p>
+      </div>
+    </section>
+  </main>
 </div>
 
-<script>
-const fmt = new Intl.NumberFormat("ru-RU");
-let allRows = [];
-let filteredRows = [];
+<nav class="bottom">
+  <button class="nav active" onclick="showPage('home')" data-page="home"><span>🏠</span>Главная</button>
+  <button class="nav" onclick="showPage('list')" data-page="list"><span>📋</span>Список</button>
+  <button class="nav" onclick="showPage('firms')" data-page="firms"><span>🏢</span>Реквизиты</button>
+  <button class="nav" onclick="showPage('exports')" data-page="exports"><span>📤</span>Экспорт</button>
+  <button class="nav" onclick="showPage('help')" data-page="help"><span>ℹ️</span>Помощь</button>
+</nav>
 
-const monthWords = [
-  "december", "декабрь",
-  "january", "январь",
-  "february", "февраль",
-  "march", "март",
-  "april", "апрель",
-  "may", "май",
-  "june", "июнь",
-  "july", "июль",
-  "august", "август",
-  "september", "сентябрь",
-  "october", "октябрь",
-  "november", "ноябрь"
+<div id="toast" class="toast"></div>
+
+<script>
+let tasks = JSON.parse(localStorage.getItem("bux_rem_tasks_v4") || "[]");
+let firms = JSON.parse(localStorage.getItem("bux_rem_firms_v4") || "[]");
+let current = new Date();
+let deferredPrompt = null;
+const fmt = new Intl.NumberFormat("ru-RU");
+const typeNames = {report:"Отчёт",pay:"Платёж",salary:"Зарплата",didox:"Didox / ЭСФ",stat:"Статистика",itpark:"IT Park",other:"Другое"};
+const typeClass = {report:"report",pay:"pay",salary:"pay",didox:"",stat:"report",itpark:"report",other:""};
+
+const DEFAULT_FIRMS = [
+  {
+    "id": "firm_esg_construction_pro",
+    "name": "ИП ООО «ESG-CONSTRUCTION PRO»",
+    "inn": "308334947",
+    "oked": "",
+    "account": "20208000305369951001",
+    "bank": "\"ИПАК ЙУЛИ\" АИТ банкининг Мирзо Улугбек ф-л",
+    "mfo": "00421",
+    "director": "Омирзаков Д.",
+    "phone": "",
+    "address": "город Ташкент, Юнусабадский район, Буюк Турон MFY, Ул. Абдулла Кадирий, дом 1-б",
+    "note": "Рег. код НДС 326020161376"
+  },
+  {
+    "id": "firm_white_way_project_group",
+    "name": "OOO \"WHITE WAY PROJECT GROUP\"",
+    "inn": "303715318",
+    "oked": "",
+    "account": "20208000100581260002",
+    "bank": "Головной офис Ипак Йули банка",
+    "mfo": "00444",
+    "director": "Бердинов.Б",
+    "phone": "",
+    "address": "город Ташкент, Юнусабадский район, МСГ Минор, квартал Ц-6 дом 70",
+    "note": ""
+  },
+  {
+    "id": "firm_digital_engineering_services",
+    "name": "ООО «DIGITAL ENGINEERING SERVICES»",
+    "inn": "310408940",
+    "oked": "",
+    "account": "20208000205638933001",
+    "bank": "Головной офис Ипак Йули банка",
+    "mfo": "00444",
+    "director": "Нурумов Г.",
+    "phone": "",
+    "address": "город Ташкент, Юнусабадский район, Буюк Турон MFY, Ул. Абдулла Кадирий, дом 1-б",
+    "note": "Рег. код НДС 326050235468"
+  },
+  {
+    "id": "firm_design_expertise_projects",
+    "name": "ООО «DESIGN EXPERTISE PROJECTS»",
+    "inn": "308989875",
+    "oked": "",
+    "account": "20208000105456087001",
+    "bank": "Головной офис Tenge Bank",
+    "mfo": "01176",
+    "director": "Тер-Акопов Т.",
+    "phone": "",
+    "address": "город Ташкент, Юнусабадский район, Буюк Турон MFY, Ул. Абдулла Кадирий, дом 1-б",
+    "note": ""
+  },
+  {
+    "id": "firm_te_com_project",
+    "name": "ООО «TE-COM PROJECT»",
+    "inn": "311248064",
+    "oked": "",
+    "account": "20208000407047055001",
+    "bank": "Операционное управление АКБ «Капиталбанк»",
+    "mfo": "00974",
+    "director": "Саримсакова С.",
+    "phone": "",
+    "address": "город Ташкент, Сергелийский район, Софдил МФЙ, ул. Шокир ариқ, дом 84",
+    "note": ""
+  }
 ];
 
-function money(n) {
-  return fmt.format(Math.round(Number(n || 0))) + " сум";
-}
-
-function clean(v) {
-  return String(v ?? "").trim();
-}
-
-function low(v) {
-  return clean(v).toLowerCase();
-}
-
-function parseAmount(v) {
-  if (v === null || v === undefined) return 0;
-
-  let s = String(v)
-    .replace(/\s/g, "")
-    .replace(/сум/gi, "")
-    .replace(/,/g, ".");
-
-  s = s.replace(/[^\d.-]/g, "");
-
-  const n = Number(s);
-  return isNaN(n) ? 0 : n;
-}
-
-function getSheetId(url) {
-  const m = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
-  return m ? m[1] : "";
-}
-
-function csvUrl(sheetId, sheetName) {
-  return `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
-}
-
-function parseCSV(text) {
-  const rows = [];
-  let row = [];
-  let cell = "";
-  let quote = false;
-
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    const n = text[i + 1];
-
-    if (c === '"' && quote && n === '"') {
-      cell += '"';
-      i++;
-    } else if (c === '"') {
-      quote = !quote;
-    } else if (c === "," && !quote) {
-      row.push(cell);
-      cell = "";
-    } else if ((c === "\n" || c === "\r") && !quote) {
-      if (cell !== "" || row.length) {
-        row.push(cell);
-        rows.push(row);
-        row = [];
-        cell = "";
-      }
-      if (c === "\r" && n === "\n") i++;
-    } else {
-      cell += c;
-    }
+function initDefaultFirms(){
+  const hasReal = Array.isArray(firms) && firms.some(f => String(f.name || "").includes("ESG-CONSTRUCTION") || String(f.inn || "") === "308334947");
+  const onlyPlaceholders = Array.isArray(firms) && firms.length && firms.every(f => /^Фирма\s*\d+$/i.test(String(f.name || "").trim()));
+  if (!Array.isArray(firms) || firms.length === 0 || onlyPlaceholders || !hasReal) {
+    firms = JSON.parse(JSON.stringify(DEFAULT_FIRMS));
+    saveFirms();
   }
-
-  if (cell !== "" || row.length) {
-    row.push(cell);
-    rows.push(row);
-  }
-
-  return rows;
 }
 
-function isMonthText(v) {
-  const s = low(v);
-  return monthWords.some(m => s.includes(m)) || /20\d{2}/.test(s);
+function restoreDefaultFirms(){
+  if(!confirm("Заменить текущие реквизиты на данные из файла?")) return;
+  firms = JSON.parse(JSON.stringify(DEFAULT_FIRMS));
+  saveFirms();
+  fillFirmSelects();
+  render();
+  toast("Реквизиты из файла восстановлены");
 }
-
-function isSumText(v) {
-  const s = low(v);
-  return s.includes("сумма") || s.includes("summa") || s === "amount";
+function clean(v){return String(v??"").trim()}
+function money(v){let n=Number(String(v??"").replace(/\s/g,"").replace(",",".").replace(/[^\d.-]/g,""));return isNaN(n)||!n?"":fmt.format(Math.round(n))+" сум"}
+function toYMD(d){
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const day = String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
 }
-
-function isStatusText(v) {
-  const s = low(v);
-  return s.includes("статус") || s.includes("status");
-}
-
-function isNumberText(v) {
-  const s = low(v);
-  return s.includes("номер") || s.includes("№") || s.includes("сф") || s.includes("invoice");
-}
-
-function statusType(status) {
-  const s = low(status);
-
-  if (!s) return "empty";
-
-  if (
-    s.includes("прин") ||
-    s.includes("подпис") ||
-    s.includes("accepted") ||
-    s.includes("confirmed")
-  ) {
-    return "accepted";
-  }
-
-  if (
-    s.includes("ожид") ||
-    s.includes("отправ") ||
-    s.includes("жд") ||
-    s.includes("pending") ||
-    s.includes("sent")
-  ) {
-    return "pending";
-  }
-
-  if (
-    s.includes("откл") ||
-    s.includes("ошиб") ||
-    s.includes("аннули") ||
-    s.includes("reject") ||
-    s.includes("error")
-  ) {
-    return "rejected";
-  }
-
-  return "pending";
-}
-
-function badge(status) {
-  const type = statusType(status);
-  const text = clean(status) || "Без статуса";
-
-  return `<span class="badge ${type}">${text}</span>`;
-}
-
-function findColumn(rows, keywords) {
-  for (let r = 0; r < Math.min(rows.length, 8); r++) {
-    for (let c = 0; c < rows[r].length; c++) {
-      const s = low(rows[r][c]);
-      if (keywords.some(k => s.includes(k))) return c;
-    }
-  }
-  return -1;
-}
-
-function findMonthBlocks(rows) {
-  const blocks = [];
-
-  for (let r = 0; r < Math.min(rows.length, 8); r++) {
-    for (let c = 0; c < rows[r].length; c++) {
-      const value = clean(rows[r][c]);
-
-      if (!isMonthText(value)) continue;
-
-      let sumCol = -1;
-      let statusCol = -1;
-      let numberCol = -1;
-
-      for (let rr = r; rr < Math.min(r + 4, rows.length); rr++) {
-        for (let cc = c; cc < Math.min(c + 8, rows[rr].length); cc++) {
-          const cell = rows[rr][cc];
-
-          if (sumCol === -1 && isSumText(cell)) sumCol = cc;
-          if (statusCol === -1 && isStatusText(cell)) statusCol = cc;
-          if (numberCol === -1 && isNumberText(cell)) numberCol = cc;
-        }
-      }
-
-      if (sumCol !== -1) {
-        blocks.push({
-          month: value,
-          sumCol,
-          statusCol,
-          numberCol
-        });
-      }
-    }
-  }
-
-  const unique = [];
-  const used = new Set();
-
-  for (const b of blocks) {
-    const key = b.month + "|" + b.sumCol;
-    if (!used.has(key)) {
-      used.add(key);
-      unique.push(b);
-    }
-  }
-
-  return unique;
-}
-
-function analyzeSheet(rows, department) {
-  const orgCol = findColumn(rows, ["организация", "org"]);
-  const innCol = findColumn(rows, ["инн", "inn"]);
-  const clientCol = findColumn(rows, ["заказчик", "клиент", "client"]);
-  const serviceCol = findColumn(rows, ["вид услуги", "услуга", "service"]);
-  const contractCol = findColumn(rows, ["договор", "contract"]);
-
-  const blocks = findMonthBlocks(rows);
-
-  const result = [];
-
-  for (let r = 0; r < rows.length; r++) {
-    const row = rows[r];
-
-    const organization = clean(row[orgCol]);
-    const inn = clean(row[innCol]);
-    const customer = clean(row[clientCol]);
-    const service = clean(row[serviceCol]);
-    const contract = clean(row[contractCol]);
-
-    if (!organization && !inn && !customer && !service && !contract) continue;
-
-    for (const b of blocks) {
-      const amount = parseAmount(row[b.sumCol]);
-      const status = b.statusCol >= 0 ? clean(row[b.statusCol]) : "";
-      const sfNumber = b.numberCol >= 0 ? clean(row[b.numberCol]) : "";
-
-      if (!amount && !status && !sfNumber) continue;
-
-      result.push({
-        department,
-        month: b.month,
-        organization,
-        inn,
-        customer,
-        service,
-        contract,
-        amount,
-        status,
-        statusType: statusType(status),
-        sfNumber,
-        rowNumber: r + 1
-      });
-    }
-  }
-
-  return result;
-}
-
-async function loadAll() {
-  const sheetUrlInput = document.getElementById("sheetUrl").value.trim();
-  const sheetNamesInput = document.getElementById("sheetNames").value.trim();
-
-  localStorage.setItem("sf_sheet_url", sheetUrlInput);
-  localStorage.setItem("sf_sheet_names", sheetNamesInput);
-
-  const sheetId = getSheetId(sheetUrlInput);
-  const sheetNames = sheetNamesInput
-    .split(",")
-    .map(x => x.trim())
-    .filter(Boolean);
-
-  if (!sheetId) {
-    alert("Не удалось определить ID Google Sheets");
-    return;
-  }
-
-  allRows = [];
-  document.getElementById("log").textContent = "Загрузка...";
-
-  let log = "";
-
-  for (const name of sheetNames) {
-    try {
-      const url = csvUrl(sheetId, name);
-      const res = await fetch(url);
-
-      if (!res.ok) {
-        throw new Error("HTTP " + res.status);
-      }
-
-      const text = await res.text();
-
-      if (text.includes("<!DOCTYPE html>")) {
-        throw new Error("Нет доступа к вкладке или таблица не опубликована");
-      }
-
-      const rows = parseCSV(text);
-      const parsed = analyzeSheet(rows, name);
-
-      allRows.push(...parsed);
-
-      log += `✅ ${name}: найдено ${parsed.length} записей\n`;
-    } catch (e) {
-      log += `❌ ${name}: ${e.message}\n`;
-    }
-  }
-
-  document.getElementById("log").textContent = log;
-
-  fillFilters();
-  applyFilters();
-}
-
-function unique(arr) {
-  return [...new Set(arr.filter(Boolean))].sort((a,b) =>
-    String(a).localeCompare(String(b), "ru")
-  );
-}
-
-function fillSelect(id, values, firstText) {
-  const el = document.getElementById(id);
-  const old = el.value;
-
-  el.innerHTML = `<option value="">${firstText}</option>` +
-    values.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
-
-  el.value = old;
-}
-
-function fillFilters() {
-  fillSelect("monthFilter", unique(allRows.map(x => x.month)), "Все месяцы");
-  fillSelect("departmentFilter", unique(allRows.map(x => x.department)), "Все подразделения");
-}
-
-function applyFilters() {
-  const month = document.getElementById("monthFilter").value;
-  const department = document.getElementById("departmentFilter").value;
-  const status = document.getElementById("statusFilter").value;
-  const q = low(document.getElementById("searchInput").value);
-  const minAmount = parseAmount(document.getElementById("minAmount").value);
-
-  filteredRows = allRows.filter(r => {
-    if (month && r.month !== month) return false;
-    if (department && r.department !== department) return false;
-    if (status && r.statusType !== status) return false;
-    if (minAmount && r.amount < minAmount) return false;
-
-    if (q) {
-      const text = low([
-        r.department,
-        r.month,
-        r.organization,
-        r.inn,
-        r.customer,
-        r.service,
-        r.contract,
-        r.status,
-        r.sfNumber
-      ].join(" "));
-
-      if (!text.includes(q)) return false;
-    }
-
-    return true;
-  });
-
+function todayStr(){return toYMD(new Date())}
+function dateObj(s){return new Date(s+"T00:00:00")}
+function daysBetween(a,b){return Math.ceil((dateObj(b)-dateObj(a))/(1000*60*60*24))}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
+function saveTasks(){localStorage.setItem("bux_rem_tasks_v4",JSON.stringify(tasks))}
+function saveFirms(){localStorage.setItem("bux_rem_firms_v4",JSON.stringify(firms))}
+function toast(t){const el=document.getElementById("toast");el.textContent=t;el.style.display="block";setTimeout(()=>el.style.display="none",2400)}
+function vibrate(){if(navigator.vibrate)navigator.vibrate(35)}
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page===id));
   render();
 }
-
-function isProblem(r) {
-  return (
-    r.statusType !== "accepted" ||
-    !r.status ||
-    !r.sfNumber ||
-    r.amount <= 0
-  );
+function fillFirmSelects(){
+  const opts = firms.map(f=>`<option value="${escapeHtml(f.id)}">${escapeHtml(f.name)}</option>`).join("");
+  company.innerHTML = opts;
+  filterCompany.innerHTML = `<option value="">Все фирмы</option>` + opts;
 }
-
-function sum(rows) {
-  return rows.reduce((a,b) => a + Number(b.amount || 0), 0);
+function getFirm(id){return firms.find(f=>f.id===id) || firms[0] || {name:""}}
+function addTask(){
+  const firm = getFirm(company.value);
+  const t = {id:uid(),firmId:company.value,company:firm.name,dueDate:dueDate.value||todayStr(),type:type.value,repeat:repeat.value,remindBefore:Number(remindBefore.value),amount:clean(amount.value),title:clean(title.value)||"Напоминание",comment:clean(comment.value),done:false,created:new Date().toISOString()};
+  tasks.unshift(t); saveTasks(); title.value=""; comment.value=""; amount.value=""; render(); vibrate(); toast("Напоминание добавлено");
 }
-
-function render() {
-  const accepted = filteredRows.filter(r => r.statusType === "accepted");
-  const pending = filteredRows.filter(r => r.statusType === "pending");
-  const problems = filteredRows.filter(isProblem);
-
-  document.getElementById("totalAmount").textContent = money(sum(filteredRows));
-  document.getElementById("totalCount").textContent = fmt.format(filteredRows.length);
-  document.getElementById("acceptedAmount").textContent = money(sum(accepted));
-  document.getElementById("pendingAmount").textContent = money(sum(pending));
-  document.getElementById("problemAmount").textContent = money(sum(problems));
-
-  renderBars();
-  renderReport();
-  renderTable();
+function nextDate(date, repeat){
+  const d = dateObj(date);
+  if(repeat==="monthly") d.setMonth(d.getMonth()+1); else if(repeat==="quarterly") d.setMonth(d.getMonth()+3); else if(repeat==="yearly") d.setFullYear(d.getFullYear()+1); else return "";
+  return toYMD(d);
 }
-
-function renderBars() {
-  const byDep = {};
-
-  for (const r of filteredRows) {
-    byDep[r.department] = (byDep[r.department] || 0) + Number(r.amount || 0);
-  }
-
-  const entries = Object.entries(byDep).sort((a,b) => b[1] - a[1]);
-  const max = Math.max(...entries.map(x => x[1]), 1);
-
-  document.getElementById("departmentBars").innerHTML = entries.map(([name, value]) => {
-    const percent = Math.max(2, value / max * 100);
-
-    return `
-      <div class="bar-row">
-        <div class="bar-name">${escapeHtml(name)}</div>
-        <div class="bar-bg">
-          <div class="bar-fill" style="width:${percent}%"></div>
-        </div>
-        <div>${money(value)}</div>
-      </div>
-    `;
-  }).join("") || "Нет данных";
+function toggleDone(id){
+  const t=tasks.find(x=>x.id===id); if(!t)return;
+  if(!t.done && t.repeat!=="none"){const nd=nextDate(t.dueDate,t.repeat); if(nd) tasks.unshift({...t,id:uid(),dueDate:nd,done:false,created:new Date().toISOString()});}
+  t.done=!t.done; saveTasks(); render(); vibrate();
 }
-
-function renderReport() {
-  const accepted = filteredRows.filter(r => r.statusType === "accepted");
-  const pending = filteredRows.filter(r => r.statusType === "pending");
-  const rejected = filteredRows.filter(r => r.statusType === "rejected");
-  const empty = filteredRows.filter(r => r.statusType === "empty");
-  const problems = filteredRows.filter(isProblem);
-
-  const byDep = {};
-  for (const r of problems) {
-    byDep[r.department] = (byDep[r.department] || 0) + Number(r.amount || 0);
-  }
-
-  const topProblem = Object.entries(byDep).sort((a,b) => b[1] - a[1])[0];
-
-  document.getElementById("report").value =
-`Отчёт по выставленным счетам-фактурам
-
-Всего найдено: ${fmt.format(filteredRows.length)} записей
-Общая сумма: ${money(sum(filteredRows))}
-
-Принято:
-${fmt.format(accepted.length)} СФ на сумму ${money(sum(accepted))}
-
-Ожидает / отправлено:
-${fmt.format(pending.length)} СФ на сумму ${money(sum(pending))}
-
-Отклонено / ошибка:
-${fmt.format(rejected.length)} СФ на сумму ${money(sum(rejected))}
-
-Без статуса:
-${fmt.format(empty.length)} СФ на сумму ${money(sum(empty))}
-
-Проблемные СФ:
-${fmt.format(problems.length)} записей на сумму ${money(sum(problems))}
-
-Главная зона контроля:
-${topProblem ? topProblem[0] + " — " + money(topProblem[1]) : "Проблем не найдено"}
-
-Рекомендация:
-Проверить СФ без номера, без статуса, ожидающие подписи, отклонённые и ошибочные документы.`;
-}
-
-function renderTable() {
-  const tbody = document.getElementById("tableBody");
-
-  tbody.innerHTML = filteredRows.map(r => `
-    <tr>
-      <td>${escapeHtml(r.department)}</td>
-      <td>${escapeHtml(r.month)}</td>
-      <td>${escapeHtml(r.organization)}</td>
-      <td>${escapeHtml(r.inn)}</td>
-      <td>${escapeHtml(r.customer)}</td>
-      <td>${escapeHtml(r.service)}</td>
-      <td>${escapeHtml(r.contract)}</td>
-      <td class="amount">${money(r.amount)}</td>
-      <td>${badge(r.status)}</td>
-      <td>${escapeHtml(r.sfNumber)}</td>
-    </tr>
-  `).join("") || `<tr><td colspan="10">Нет данных</td></tr>`;
-}
-
-function exportCsv() {
-  const header = [
-    "Подразделение",
-    "Месяц",
-    "Организация",
-    "ИНН",
-    "Заказчик",
-    "Вид услуги",
-    "Договор",
-    "Сумма",
-    "Статус СФ",
-    "Номер СФ"
+function delTask(id){tasks=tasks.filter(x=>x.id!==id);saveTasks();render()}
+function clearDone(){tasks=tasks.filter(x=>!x.done);saveTasks();render()}
+function addDefaultTemplates(){
+  const year=new Date().getFullYear(), month=new Date().getMonth();
+  const templates=[
+    {day:5,type:"didox",title:"Проверить входящие и исходящие СФ в Didox",repeat:"monthly"},
+    {day:10,type:"salary",title:"Проверить табель и начисления зарплаты",repeat:"monthly"},
+    {day:12,type:"pay",title:"Подготовить зарплатные платежи",repeat:"monthly"},
+    {day:15,type:"report",title:"Проверить банк, акты, СФ и закрытие документов",repeat:"monthly"},
+    {day:20,type:"report",title:"Подготовить налоговые отчёты",repeat:"monthly"},
+    {day:25,type:"pay",title:"Проверить налоги и обязательные платежи к оплате",repeat:"monthly"},
+    {day:28,type:"stat",title:"Проверить статистические отчёты",repeat:"monthly"},
+    {day:30,type:"itpark",title:"Проверить отчёты / обязательства IT Park",repeat:"monthly"}
   ];
-
-  const rows = filteredRows.map(r => [
-    r.department,
-    r.month,
-    r.organization,
-    r.inn,
-    r.customer,
-    r.service,
-    r.contract,
-    r.amount,
-    r.status,
-    r.sfNumber
-  ]);
-
-  const csv = [header, ...rows]
-    .map(row => row.map(v => `"${String(v ?? "").replace(/"/g, '""')}"`).join(","))
-    .join("\n");
-
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "sf_dashboard_export.csv";
-  a.click();
-  URL.revokeObjectURL(a.href);
+  for(const f of firms){
+    for(const x of templates){
+      const d=new Date(year,month,Math.min(x.day,28));
+      tasks.push({id:uid(),firmId:f.id,company:f.name,dueDate:toYMD(d),type:x.type,repeat:x.repeat,remindBefore:3,amount:"",title:x.title,comment:"Шаблон. Проверьте и настройте срок под реальные требования.",done:false,created:new Date().toISOString()});
+    }
+  }
+  saveTasks();render();toast("Шаблоны добавлены");
+}
+function filtered(){
+  const q=clean(search?.value||"").toLowerCase(), fc=filterCompany?.value||"", ft=filterType?.value||"", fs=filterStatus?.value||"", today=todayStr();
+  return tasks.filter(t=>{
+    if(fc && t.firmId!==fc) return false; if(ft && t.type!==ft) return false;
+    const firm=getFirm(t.firmId);
+    if(q && ![t.company,t.title,t.comment,t.amount,typeNames[t.type],firm.inn,firm.bank,firm.account].join(" ").toLowerCase().includes(q)) return false;
+    const diff=daysBetween(today,t.dueDate);
+    if(fs==="active"&&t.done)return false; if(fs==="done"&&!t.done)return false; if(fs==="late"&&!(diff<0&&!t.done))return false; if(fs==="week"&&!(diff>=0&&diff<=7&&!t.done))return false;
+    return true;
+  }).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
+}
+function renderStats(){
+  const today=todayStr(), active=tasks.filter(t=>!t.done);
+  statToday.textContent=active.filter(t=>t.dueDate===today).length;
+  statWeek.textContent=active.filter(t=>{const d=daysBetween(today,t.dueDate);return d>=0&&d<=7}).length;
+  statLate.textContent=active.filter(t=>daysBetween(today,t.dueDate)<0).length;
+  statFirms.textContent=firms.length;
+}
+function renderList(){
+  const arr=filtered();
+  taskList.innerHTML=arr.map(t=>{
+    const diff=daysBetween(todayStr(),t.dueDate), late=diff<0&&!t.done, status=t.done?"Выполнено":late?"Просрочено":diff===0?"Сегодня":`Через ${diff} дн.`;
+    const cls=late?"bad":typeClass[t.type]||"", firm=getFirm(t.firmId);
+    return `<div class="task ${t.done?'done':''}">
+      <div class="task-title">${escapeHtml(t.title)}</div>
+      <span class="tag">${escapeHtml(t.company)}</span><span class="tag ${cls}">${escapeHtml(typeNames[t.type])}</span><span class="tag ${late?'bad':''}">${escapeHtml(status)}</span>${t.amount?`<span class="tag pay">${escapeHtml(money(t.amount))}</span>`:""}
+      <div class="small">Срок: ${escapeHtml(formatDate(t.dueDate))} • Повтор: ${repeatName(t.repeat)} • Напомнить за ${t.remindBefore} дн.</div>
+      ${firm.inn?`<div class="small">ИНН: ${escapeHtml(firm.inn)} • Р/с: ${escapeHtml(firm.account||"")}</div>`:""}
+      ${t.comment?`<div class="small" style="margin-top:6px">${escapeHtml(t.comment)}</div>`:""}
+      <div class="btns"><button class="secondary" onclick="toggleDone('${t.id}')">${t.done?'Вернуть':'Готово'}</button><button class="secondary" onclick="copyPaymentText('${t.id}')">Текст платежа</button><button class="danger" onclick="delTask('${t.id}')">Удалить</button></div>
+    </div>`;
+  }).join("") || `<div class="task">Нет напоминаний по выбранным фильтрам.</div>`;
+}
+function renderCalendar(){
+  const y=current.getFullYear(), m=current.getMonth(), names=["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
+  calTitle.textContent=current.toLocaleString("ru-RU",{month:"long",year:"numeric"});
+  const first=new Date(y,m,1), start=new Date(first), day=(first.getDay()+6)%7; start.setDate(first.getDate()-day);
+  let html=names.map(n=>`<div class="day-name">${n}</div>`).join(""), today=todayStr();
+  for(let i=0;i<42;i++){
+    const d=new Date(start); d.setDate(start.getDate()+i); const ds=toYMD(d); const items=tasks.filter(t=>t.dueDate===ds&&!t.done); const inMonth=d.getMonth()===m;
+    html+=`<div class="day ${ds===today?'today':''}" style="${inMonth?'':'opacity:.35'}"><div class="day-num">${d.getDate()}</div>${items.slice(0,3).map(t=>`<div class="event-line"><span class="dot ${typeClass[t.type]||''}"></span>${escapeHtml(t.title)}</div>`).join("")}${items.length>3?`<div class="event-line">+${items.length-3} ещё</div>`:""}</div>`;
+  }
+  calendar.innerHTML=html;
+}
+function renderWeekReport(){
+  const today=todayStr();
+  const arr=tasks.filter(t=>!t.done&&daysBetween(today,t.dueDate)>=0&&daysBetween(today,t.dueDate)<=7).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
+  weekReport.value=arr.length?arr.map(t=>`${formatDate(t.dueDate)} — ${t.company} — ${typeNames[t.type]} — ${t.title}${t.amount?` — ${money(t.amount)}`:""}`).join("\n"):"На ближайшие 7 дней задач нет.";
+}
+function renderFirms(){
+  firmList.innerHTML=firms.map(f=>`<div class="firm-card">
+    <div class="firm-title">${escapeHtml(f.name)}</div>
+    <div class="small">ИНН: ${escapeHtml(f.inn||"-")} • ОКЭД: ${escapeHtml(f.oked||"-")}</div>
+    <div class="small">Р/с: ${escapeHtml(f.account||"-")} • МФО: ${escapeHtml(f.mfo||"-")}</div>
+    <div class="small">Банк: ${escapeHtml(f.bank||"-")}</div>
+    <div class="small">Адрес: ${escapeHtml(f.address||"-")}</div>
+    <div class="small">Директор: ${escapeHtml(f.director||"-")} • Тел: ${escapeHtml(f.phone||"-")}</div>
+    ${f.note?`<div class="small">Примечание: ${escapeHtml(f.note)}</div>`:""}
+    <div class="btns"><button class="secondary" onclick="editFirm('${f.id}')">Редактировать</button><button class="secondary" onclick="copyFirm('${f.id}')">Скопировать</button><button class="danger" onclick="deleteFirm('${f.id}')">Удалить</button></div>
+  </div>`).join("");
 }
 
-function copyReport() {
-  const text = document.getElementById("report").value;
+function openFirmForm(){
+  const wrap = document.getElementById("firmFormWrap");
+  clearFirmForm();
+  if(wrap) wrap.style.display = "block";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function closeFirmForm(){
+  const wrap = document.getElementById("firmFormWrap");
+  if(wrap) wrap.style.display = "none";
+}
+
+function saveFirm(){
+  const id=firmName.dataset.editId || uid();
+  const f={id,name:clean(firmName.value)||"Новая фирма",inn:clean(firmInn.value),oked:clean(firmOked.value),account:clean(firmAccount.value),bank:clean(firmBank.value),mfo:clean(firmMfo.value),director:clean(firmDirector.value),phone:clean(firmPhone.value),address:clean(firmAddress.value),note:clean(firmNote.value)};
+  const idx=firms.findIndex(x=>x.id===id); if(idx>=0) firms[idx]=f; else firms.push(f);
+  saveFirms(); fillFirmSelects(); render(); toast("Реквизиты сохранены"); clearFirmForm(); closeFirmForm();
+}
+function editFirm(id){
+  const f=getFirm(id); openFirmForm(); firmName.dataset.editId=id; firmName.value=f.name||""; firmInn.value=f.inn||""; firmOked.value=f.oked||""; firmAccount.value=f.account||""; firmBank.value=f.bank||""; firmMfo.value=f.mfo||""; firmDirector.value=f.director||""; firmPhone.value=f.phone||""; firmAddress.value=f.address||""; firmNote.value=f.note||""; window.scrollTo({top:0,behavior:"smooth"});
+}
+function clearFirmForm(){delete firmName.dataset.editId;["firmName","firmInn","firmOked","firmAccount","firmBank","firmMfo","firmDirector","firmPhone","firmAddress","firmNote"].forEach(id=>document.getElementById(id).value="")}
+function deleteFirm(id){if(!confirm("Удалить фирму?"))return; firms=firms.filter(f=>f.id!==id); saveFirms(); fillFirmSelects(); render()}
+function firmText(f){return `${f.name}\nИНН: ${f.inn||"-"}\nОКЭД: ${f.oked||"-"}\nР/с: ${f.account||"-"}\nБанк: ${f.bank||"-"}\nМФО: ${f.mfo||"-"}\nАдрес: ${f.address||"-"}\nДиректор: ${f.director||"-"}\nТелефон: ${f.phone||"-"}`}
+function copyFirm(id){navigator.clipboard.writeText(firmText(getFirm(id)));toast("Реквизиты скопированы")}
+function copyPaymentText(id){
+  const t=tasks.find(x=>x.id===id), f=getFirm(t.firmId);
+  const text=`${t.title}\nФирма: ${f.name}\nИНН: ${f.inn||"-"}\nР/с: ${f.account||"-"}\nБанк: ${f.bank||"-"}\nМФО: ${f.mfo||"-"}\nСумма: ${t.amount?money(t.amount):"-"}\nСрок: ${formatDate(t.dueDate)}\nКомментарий: ${t.comment||"-"}`;
+  navigator.clipboard.writeText(text);toast("Текст платежа скопирован");
+}
+function render(){renderStats();renderList();renderCalendar();renderWeekReport();renderFirms()}
+function moveMonth(delta){current.setMonth(current.getMonth()+delta);renderCalendar()}
+function formatDate(s){return dateObj(s).toLocaleDateString("ru-RU")}
+function repeatName(r){return {none:"нет",monthly:"ежемесячно",quarterly:"ежеквартально",yearly:"ежегодно"}[r]||r}
+function download(name, content, type){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click();URL.revokeObjectURL(a.href)}
+function exportCSV(){
+  const header=["Фирма","Дата","Тип","Название","Сумма","Повтор","Напомнить за","Комментарий","Статус","ИНН","Р/с","Банк","МФО"];
+  const rows=tasks.map(t=>{const f=getFirm(t.firmId);return [t.company,t.dueDate,typeNames[t.type],t.title,t.amount,t.repeat,t.remindBefore,t.comment,t.done?"Готово":"Активно",f.inn,f.account,f.bank,f.mfo]});
+  download("buxgalter_reminders.csv",[header,...rows].map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n"),"text/csv;charset=utf-8");
+}
+function exportFirmsCsv(){
+  const header=["Название","ИНН","ОКЭД","Р/с","Банк","МФО","Директор","Телефон","Адрес","Примечание"];
+  const rows=firms.map(f=>[f.name,f.inn,f.oked,f.account,f.bank,f.mfo,f.director,f.phone,f.address,f.note]);
+  download("rekvizity_firm.csv",[header,...rows].map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n"),"text/csv;charset=utf-8");
+}
+function icsDate(s){return s.replaceAll("-","")}
+function escapeIcs(s){return String(s??"").replace(/\\/g,"\\\\").replace(/\n/g,"\\n").replace(/,/g,"\\,").replace(/;/g,"\\;")}
+
+function copyWeekReport(){navigator.clipboard.writeText(weekReport.value);toast("Отчёт скопирован")}
+
+function getMonthValue(){
+  const el = document.getElementById("bulkMonth");
+  if(!el) return toYMD(new Date()).slice(0,7);
+  if(!el.value) el.value = toYMD(new Date()).slice(0,7);
+  return el.value;
+}
+function safeMonthDate(monthValue, day){
+  const [y,m] = monthValue.split("-").map(Number);
+  const last = new Date(y, m, 0).getDate();
+  const d = new Date(y, m-1, Math.min(day,last));
+  return toYMD(d);
+}
+function monthTemplates(){
+  return [
+    {day:5,type:"didox",title:"Проверить входящие и исходящие СФ в Didox"},
+    {day:10,type:"salary",title:"Проверить табель и начисления зарплаты"},
+    {day:12,type:"pay",title:"Подготовить зарплатные платежи"},
+    {day:15,type:"report",title:"Проверить банк, акты, СФ и закрытие документов"},
+    {day:20,type:"report",title:"Подготовить налоговые отчёты"},
+    {day:25,type:"pay",title:"Проверить налоги и обязательные платежи к оплате"},
+    {day:28,type:"stat",title:"Проверить статистические отчёты"},
+    {day:30,type:"itpark",title:"Проверить отчёты / обязательства IT Park"}
+  ];
+}
+function createMonthNotifications(){
+  const mv = getMonthValue();
+  const remind = Number(document.getElementById("bulkRemind")?.value || 3);
+  const rep = document.getElementById("bulkRepeat")?.value || "monthly";
+  let count = 0;
+  for(const f of firms){
+    for(const x of monthTemplates()){
+      const due = safeMonthDate(mv, x.day);
+      const exists = tasks.some(t => t.firmId === f.id && t.dueDate === due && t.title === x.title);
+      if(exists) continue;
+      tasks.push({
+        id:uid(),
+        firmId:f.id,
+        company:f.name,
+        dueDate:due,
+        type:x.type,
+        repeat:rep,
+        remindBefore:remind,
+        amount:"",
+        title:x.title,
+        comment:"Автоматически создано для выбранного месяца. При необходимости измените дату и комментарий.",
+        done:false,
+        created:new Date().toISOString()
+      });
+      count++;
+    }
+  }
+  saveTasks();
+  render();
+  toast("Создано задач: " + count);
+}
+function tasksForSelectedMonth(){
+  const mv = getMonthValue();
+  return tasks.filter(t => !t.done && String(t.dueDate || "").startsWith(mv)).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
+}
+function icsDateTime(date, time){
+  const cleanTime = (time || "09:00").replace(":","");
+  return date.replaceAll("-","") + "T" + cleanTime + "00";
+}
+function addMinutesToTime(date, time, minutes){
+  const d = new Date(date + "T" + (time || "09:00") + ":00");
+  d.setMinutes(d.getMinutes() + minutes);
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,"0");
+  const dd = String(d.getDate()).padStart(2,"0");
+  const hh = String(d.getHours()).padStart(2,"0");
+  const mi = String(d.getMinutes()).padStart(2,"0");
+  return `${yyyy}${mm}${dd}T${hh}${mi}00`;
+}
+
+
+function getGlobalCalTime(){
+  return document.getElementById("globalCalTime")?.value || document.getElementById("bulkTime")?.value || "09:00";
+}
+function ymdCompact(date){
+  return String(date || "").replaceAll("-","");
+}
+function localDateTimeCompact(date, time){
+  const t = (time || "09:00").replace(":","");
+  return ymdCompact(date) + "T" + t + "00";
+}
+function addMinutesLocalCompact(date, time, minutes){
+  const d = new Date(date + "T" + (time || "09:00") + ":00");
+  d.setMinutes(d.getMinutes() + minutes);
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const dd = String(d.getDate()).padStart(2,"0");
+  const hh = String(d.getHours()).padStart(2,"0");
+  const mi = String(d.getMinutes()).padStart(2,"0");
+  return `${y}${m}${dd}T${hh}${mi}00`;
+}
+function alarmBlock(days, title){
+  if(days === "" || days === null || days === undefined) return "";
+  const d = Number(days);
+  const trigger = d === 0 ? "-PT0M" : `-P${d}D`;
+  return `BEGIN:VALARM\nACTION:DISPLAY\nDESCRIPTION:${escapeIcs(title)}\nTRIGGER:${trigger}\nEND:VALARM\n`;
+}
+function selectedAlarmBlocks(title, fallbackDays){
+  const a1 = document.getElementById("alarm1")?.value;
+  const a2 = document.getElementById("alarm2")?.value;
+  let blocks = "";
+  if(a1 !== undefined) blocks += alarmBlock(a1, title);
+  else blocks += alarmBlock(fallbackDays || 3, title);
+  if(a2 !== undefined && a2 !== "") blocks += alarmBlock(a2, title);
+  return blocks;
+}
+function icsHeader(){
+  return `BEGIN:VCALENDAR\nVERSION:2.0\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\nPRODID:-//Shax//Buxgalter Reminders//RU\nX-WR-TIMEZONE:Asia/Tashkent\nBEGIN:VTIMEZONE\nTZID:Asia/Tashkent\nBEGIN:STANDARD\nTZOFFSETFROM:+0500\nTZOFFSETTO:+0500\nTZNAME:UZT\nDTSTART:19700101T000000\nEND:STANDARD\nEND:VTIMEZONE\n`;
+}
+function makeCalendarEvent(t, suffix){
+  const f = getFirm(t.firmId);
+  const time = getGlobalCalTime();
+  const summary = `${t.company} — ${t.title}`;
+  const desc = `${typeNames[t.type]}${t.amount ? " | Сумма: " + money(t.amount) : ""}${f.inn ? " | ИНН: " + f.inn : ""}${f.account ? " | Р/с: " + f.account : ""}${f.bank ? " | Банк: " + f.bank : ""}${f.mfo ? " | МФО: " + f.mfo : ""}${t.comment ? " | " + t.comment : ""}`;
+  return `BEGIN:VEVENT\nUID:${t.id}-${suffix}@shax-reminders\nDTSTAMP:${new Date().toISOString().replace(/[-:]/g,"").split(".")[0]}Z\nDTSTART;TZID=Asia/Tashkent:${localDateTimeCompact(t.dueDate,time)}\nDTEND;TZID=Asia/Tashkent:${addMinutesLocalCompact(t.dueDate,time,30)}\nSUMMARY:${escapeIcs(summary)}\nDESCRIPTION:${escapeIcs(desc)}\n${selectedAlarmBlocks(t.title, t.remindBefore)}END:VEVENT\n`;
+}
+function exportICS(){
+  const arr = tasks.filter(x=>!x.done).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
+  if(!arr.length){ alert("Нет активных задач для экспорта."); return; }
+  let ics = icsHeader();
+  for(const t of arr) ics += makeCalendarEvent(t, "all");
+  ics += "END:VCALENDAR";
+  download("buxgalter_reminders_with_notifications.ics", ics, "text/calendar;charset=utf-8");
+}
+function exportMonthICS(){
+  const arr = tasksForSelectedMonth();
+  if(!arr.length){
+    alert("На выбранный месяц нет активных задач. Сначала нажмите «Создать задачи на месяц».");
+    return;
+  }
+  let ics = icsHeader();
+  for(const t of arr) ics += makeCalendarEvent(t, "month");
+  ics += "END:VCALENDAR";
+  download("buxgalter_month_reminders_with_notifications.ics", ics, "text/calendar;charset=utf-8");
+}
+
+function copyMonthPlan(){
+  const arr = tasksForSelectedMonth();
+  const text = arr.length ? arr.map(t=>`${formatDate(t.dueDate)} — ${t.company} — ${typeNames[t.type]} — ${t.title}`).join("\n") : "На выбранный месяц задач нет.";
   navigator.clipboard.writeText(text);
-  alert("Отчёт скопирован");
+  toast("План месяца скопирован");
 }
 
-function escapeHtml(v) {
-  return String(v ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-window.addEventListener("load", () => {
-  const savedUrl = localStorage.getItem("sf_sheet_url");
-  const savedNames = localStorage.getItem("sf_sheet_names");
-
-  if (savedUrl) document.getElementById("sheetUrl").value = savedUrl;
-  if (savedNames) document.getElementById("sheetNames").value = savedNames;
-
-  loadAll();
-});
+function requestNotify(){if(!("Notification" in window)){alert("Уведомления не поддерживаются")}else Notification.requestPermission().then(p=>{toast(p==="granted"?"Уведомления включены":"Уведомления не включены");if(p==="granted")new Notification("Напоминания бухгалтера",{body:"Уведомления включены"})})}
+function escapeHtml(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+window.addEventListener("beforeinstallprompt",(e)=>{e.preventDefault();deferredPrompt=e;installBtn.style.display="block"});
+installBtn.addEventListener("click",async()=>{if(!deferredPrompt){toast("Для установки откройте через сайт HTTPS");return}deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installBtn.style.display="none"});
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
+window.addEventListener("load",()=>{initDefaultFirms();dueDate.value=todayStr();const bm=document.getElementById("bulkMonth"); if(bm) bm.value=toYMD(new Date()).slice(0,7); fillFirmSelects();render()});
 </script>
-
 </body>
 </html>
