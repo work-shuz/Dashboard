@@ -402,7 +402,7 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
       <div class="grid">
         <div>
           <div class="panel">
-            <h3>Быстро добавить напоминание</h3>\n            <div class="small" style="margin-bottom:10px">В поле «Фирма» можно выбрать одну фирму или «Все фирмы сразу».</div>
+            <h3>Быстро добавить напоминание</h3>\n            <div class="small" style="margin-bottom:10px">В поле «Фирма» можно выбрать одну фирму или «Все фирмы сразу». При повторе задачи создаются автоматически: каждый месяц — на 12 месяцев вперёд, квартал — на 8 кварталов, год — на 4 года.</div>
             <div class="form-grid">
               <div><label>Фирма</label><select id="company"></select></div>
               <div><label>Дата срока</label><input id="dueDate" type="date"></div>
@@ -787,12 +787,45 @@ function fillFirmSelects(){
   if(modalCompanySelect) modalCompanySelect.innerHTML = addOpts;
 }
 function getFirm(id){return firms.find(f=>f.id===id) || firms[0] || {name:""}}
-function createTaskObject(firm, data){
+function addMonthsKeepDay(date, months){
+  const d = dateObj(date);
+  const originalDay = d.getDate();
+  const target = new Date(d.getFullYear(), d.getMonth() + months, 1);
+  const lastDay = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate();
+  target.setDate(Math.min(originalDay, lastDay));
+  return toYMD(target);
+}
+
+function repeatDates(startDate, repeat){
+  const dates = [startDate];
+
+  if(repeat === "monthly"){
+    for(let i = 1; i < 12; i++) dates.push(addMonthsKeepDay(startDate, i));
+  }else if(repeat === "quarterly"){
+    for(let i = 1; i < 8; i++) dates.push(addMonthsKeepDay(startDate, i * 3));
+  }else if(repeat === "yearly"){
+    for(let i = 1; i < 4; i++) dates.push(addMonthsKeepDay(startDate, i * 12));
+  }
+
+  return dates;
+}
+
+function taskExists(firmId, dueDateValue, taskTitle, taskType){
+  const titleValue = clean(taskTitle);
+  return tasks.some(t =>
+    t.firmId === firmId &&
+    t.dueDate === dueDateValue &&
+    clean(t.title) === titleValue &&
+    t.type === taskType
+  );
+}
+
+function createTaskObject(firm, data, dateOverride){
   return {
     id: uid(),
     firmId: firm.id,
     company: firm.name,
-    dueDate: data.dueDate,
+    dueDate: dateOverride || data.dueDate,
     type: data.type,
     repeat: data.repeat,
     remindBefore: Number(data.remindBefore),
@@ -814,12 +847,23 @@ function addTasksByCompanySelection(companyId, data){
     return 0;
   }
 
-  targetFirms.forEach(firm => tasks.unshift(createTaskObject(firm, data)));
+  const dates = repeatDates(data.dueDate, data.repeat);
+  let added = 0;
+
+  targetFirms.forEach(firm => {
+    dates.forEach(dateValue => {
+      if(!taskExists(firm.id, dateValue, data.title, data.type)){
+        tasks.unshift(createTaskObject(firm, data, dateValue));
+        added++;
+      }
+    });
+  });
+
   saveTasks();
   render();
   vibrate();
 
-  return targetFirms.length;
+  return added;
 }
 
 function addTask(){
@@ -835,23 +879,40 @@ function addTask(){
     comment: comment.value
   });
 
-  if(!count) return;
+  if(!count){
+    toast("Такие напоминания уже есть");
+    return;
+  }
 
   title.value = "";
   comment.value = "";
   amount.value = "";
 
-  toast(count > 1 ? "Добавлено по всем фирмам: " + count : "Напоминание добавлено");
+  toast(count > 1 ? "Добавлено напоминаний: " + count : "Напоминание добавлено");
 }
+
 function nextDate(date, repeat){
-  const d = dateObj(date);
-  if(repeat==="monthly") d.setMonth(d.getMonth()+1); else if(repeat==="quarterly") d.setMonth(d.getMonth()+3); else if(repeat==="yearly") d.setFullYear(d.getFullYear()+1); else return "";
-  return toYMD(d);
+  if(repeat==="monthly") return addMonthsKeepDay(date, 1);
+  if(repeat==="quarterly") return addMonthsKeepDay(date, 3);
+  if(repeat==="yearly") return addMonthsKeepDay(date, 12);
+  return "";
 }
+
 function toggleDone(id){
-  const t=tasks.find(x=>x.id===id); if(!t)return;
-  if(!t.done && t.repeat!=="none"){const nd=nextDate(t.dueDate,t.repeat); if(nd) tasks.unshift({...t,id:uid(),dueDate:nd,done:false,created:new Date().toISOString()});}
-  t.done=!t.done; saveTasks(); render(); vibrate();
+  const t = tasks.find(x=>x.id===id);
+  if(!t) return;
+
+  if(!t.done && t.repeat !== "none"){
+    const nd = nextDate(t.dueDate, t.repeat);
+    if(nd && !taskExists(t.firmId, nd, t.title, t.type)){
+      tasks.unshift({...t, id:uid(), dueDate:nd, done:false, created:new Date().toISOString()});
+    }
+  }
+
+  t.done = !t.done;
+  saveTasks();
+  render();
+  vibrate();
 }
 function delTask(id){tasks=tasks.filter(x=>x.id!==id);saveTasks();render()}
 function clearDone(){tasks=tasks.filter(x=>!x.done);saveTasks();render()}
@@ -981,9 +1042,12 @@ function addModalTask(){
     comment: document.getElementById("modalComment").value
   });
 
-  if(!count) return;
+  if(!count){
+    toast("Такие напоминания уже есть");
+    return;
+  }
 
-  toast(count > 1 ? "Добавлено на дату по всем фирмам: " + count : "Напоминание добавлено на " + formatDate(selectedCalendarDate));
+  toast(count > 1 ? "Добавлено напоминаний: " + count : "Напоминание добавлено на " + formatDate(selectedCalendarDate));
 
   const keepDate = selectedCalendarDate;
   openDateModal(keepDate);
