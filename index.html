@@ -44,6 +44,248 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
 .firm-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 6px}
 @media(max-width:900px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.form-grid,.form-grid-3,.filters,.month-tools{grid-template-columns:1fr}.day{min-height:72px}}
 @media(max-width:520px){.hero h2{font-size:22px}.cal-grid{gap:5px}.day{min-height:64px;border-radius:13px;padding:6px}.event-line{display:none}.top h1{font-size:17px}.nav{font-size:10px}.nav span{font-size:18px}}
+
+/* ===== ADAPTIVE DESKTOP / MOBILE MODE ===== */
+@media (min-width: 1024px){
+  body{
+    padding-bottom:0;
+    overflow-x:hidden;
+  }
+  .app{
+    max-width:none;
+    min-height:100vh;
+    display:grid;
+    grid-template-columns:292px 1fr;
+  }
+  .top{
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    width:292px;
+    height:100vh;
+    align-items:flex-start;
+    flex-direction:column;
+    padding:24px 18px;
+    border-bottom:0;
+    border-right:1px solid var(--line);
+    background:rgba(7,17,31,.94);
+  }
+  .logo{
+    width:58px;
+    height:58px;
+    border-radius:22px;
+    font-size:22px;
+  }
+  .top h1{
+    font-size:22px;
+    line-height:1.15;
+    margin-top:10px;
+  }
+  .top p{
+    font-size:13px;
+    line-height:1.45;
+    max-width:230px;
+  }
+  .install{
+    margin-left:0;
+    width:100%;
+    justify-content:center;
+    margin-top:14px;
+  }
+  .wrap{
+    grid-column:2;
+    padding:28px 34px 34px;
+    max-width:1280px;
+    width:100%;
+    margin:0 auto;
+  }
+  .bottom{
+    position:fixed;
+    left:18px;
+    top:190px;
+    bottom:auto;
+    right:auto;
+    width:256px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    padding:0;
+    background:transparent;
+    border:0;
+    backdrop-filter:none;
+    z-index:90;
+  }
+  .nav{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    text-align:left;
+    font-size:14px;
+    padding:13px 14px;
+    border:1px solid transparent;
+    border-radius:18px;
+  }
+  .nav span{
+    display:inline-grid;
+    place-items:center;
+    margin:0;
+    width:30px;
+    height:30px;
+    font-size:20px;
+  }
+  .nav.active{
+    background:rgba(255,255,255,.09);
+    border-color:rgba(255,255,255,.14);
+    box-shadow:0 14px 30px rgba(0,0,0,.18);
+  }
+  .hero{
+    padding:26px;
+  }
+  .hero h2{
+    font-size:32px;
+  }
+  .stats{
+    grid-template-columns:repeat(4,1fr);
+  }
+  .stat{
+    min-height:108px;
+    padding:20px;
+  }
+  .stat b{
+    font-size:30px;
+  }
+  .grid{
+    grid-template-columns:minmax(360px,.9fr) minmax(560px,1.4fr);
+    align-items:start;
+  }
+  .panel{
+    padding:20px;
+  }
+  .panel h3{
+    font-size:20px;
+  }
+  .form-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .form-grid-3{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+  .filters{
+    grid-template-columns:1.4fr repeat(4,minmax(150px,1fr));
+  }
+  .month-tools{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+  .cal-grid{
+    gap:10px;
+  }
+  .day{
+    min-height:118px;
+    border-radius:18px;
+  }
+  .event-line{
+    display:block;
+    font-size:11px;
+  }
+  .firm-card,.task{
+    padding:16px;
+  }
+  .firm-toolbar{
+    justify-content:flex-start;
+  }
+}
+
+@media (max-width: 1023px){
+  .app{
+    display:block;
+  }
+  .top{
+    flex-direction:row;
+  }
+  .bottom{
+    display:grid;
+  }
+  .wrap{
+    padding:14px;
+  }
+  .hero{
+    border-radius:24px;
+  }
+  .hero h2{
+    font-size:22px;
+  }
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+  .stat{
+    min-height:82px;
+  }
+  .grid{
+    grid-template-columns:1fr;
+  }
+  .form-grid,.form-grid-3,.filters,.month-tools{
+    grid-template-columns:1fr;
+  }
+  input,select,textarea,button{
+    font-size:16px;
+  }
+  .panel{
+    border-radius:22px;
+  }
+  .firm-toolbar button,
+  .btns button{
+    flex:1 1 auto;
+  }
+}
+
+@media (max-width: 520px){
+  .top{
+    padding:10px 12px;
+  }
+  .logo{
+    width:40px;
+    height:40px;
+    border-radius:15px;
+  }
+  .top h1{
+    font-size:16px;
+  }
+  .top p{
+    font-size:11px;
+  }
+  .wrap{
+    padding:12px;
+  }
+  .hero{
+    padding:16px;
+  }
+  .stats{
+    gap:9px;
+  }
+  .stat{
+    padding:12px;
+    border-radius:18px;
+  }
+  .stat b{
+    font-size:20px;
+  }
+  .panel{
+    padding:14px;
+  }
+  .bottom{
+    grid-template-columns:repeat(5,1fr);
+  }
+  .nav{
+    font-size:10px;
+    padding:7px 3px;
+  }
+  .nav span{
+    font-size:18px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -130,7 +372,7 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
 <section id="firms" class="page">
       <div class="panel">
         <h3>Реквизиты фирм</h3>
-        <div class="small" style="margin-bottom:12px">Реквизиты уже загружены из файла: ESG-CONSTRUCTION PRO, WHITE WAY PROJECT GROUP, DIGITAL ENGINEERING SERVICES, DESIGN EXPERTISE PROJECTS, TE-COM PROJECT. Форма скрыта до нажатия кнопки «Добавить фирму».</div>
+        <div class="small" style="margin-bottom:12px">Реквизиты уже загружены из файла: ESG-CONSTRUCTION PRO, WHITE WAY PROJECT GROUP, DIGITAL ENGINEERING SERVICES, DESIGN EXPERTISE PROJECTS, TE-COM PROJECT. Форма скрыта до нажатия кнопки «Добавить фирму». Авто-режим: на компьютере боковое меню, на телефоне мобильное нижнее меню.</div>
 
         <div class="firm-toolbar">
           <button onclick="openFirmForm()">Добавить фирму</button>
