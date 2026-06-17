@@ -29,7 +29,12 @@ label{display:block;color:#cbd5e1;font-size:12px;margin:0 0 6px}
 input,select,textarea{width:100%;padding:13px;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:#020617;color:white;outline:none;font-size:15px}textarea{min-height:86px;resize:vertical}
 button{border:0;border-radius:16px;padding:13px 15px;color:white;font-weight:900;cursor:pointer;background:linear-gradient(135deg,var(--blue),var(--violet))}
 button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}button.danger{background:rgba(251,113,133,.16);border:1px solid rgba(251,113,133,.35)}
-.btns{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.filters{display:grid;grid-template-columns:1.5fr repeat(4,1fr);gap:10px;margin-bottom:12px}
+.btns{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+.filters input[type="date"]{min-width:0}
+.bulk-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:0 0 12px}
+.bulk-actions .small{margin-right:auto}
+.task-select{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.task-select input{width:18px;height:18px;padding:0;accent-color:var(--blue)}
 .task,.firm-card{border:1px solid var(--line);background:#020617;border-radius:18px;padding:13px;margin-bottom:10px}.task.done{opacity:.58}
 .task-title{font-weight:900;font-size:15px;line-height:1.35;margin-bottom:6px}.firm-title{font-weight:900;font-size:16px;margin-bottom:8px}
 .tag{display:inline-block;padding:5px 9px;border-radius:99px;font-size:11px;font-weight:900;background:rgba(56,189,248,.14);color:#bae6fd;margin:0 4px 6px 0}.tag.pay{background:rgba(251,191,36,.14);color:#fde68a}.tag.report{background:rgba(52,211,153,.14);color:#bbf7d0}.tag.bad{background:rgba(251,113,133,.16);color:#fecdd3}
@@ -178,7 +183,7 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
     grid-template-columns:repeat(3,minmax(0,1fr));
   }
   .filters{
-    grid-template-columns:1.4fr repeat(4,minmax(150px,1fr));
+    grid-template-columns:1.4fr repeat(6,minmax(130px,1fr));
   }
   .month-tools{
     grid-template-columns:repeat(4,minmax(0,1fr));
@@ -1154,7 +1159,16 @@ body[data-theme="light"] .contact-panel{
           <select id="filterStatus" onchange="render()">
             <option value="">Все</option><option value="active">Активные</option><option value="done">Выполненные</option><option value="late">Просроченные</option><option value="week">На 7 дней</option>
           </select>
+          <input id="filterDateFrom" type="date" onchange="render()" title="Дата с">
+          <input id="filterDateTo" type="date" onchange="render()" title="Дата по">
           <button class="secondary" onclick="clearDone()">Удалить выполненные</button>
+        </div>
+        <div class="bulk-actions">
+          <div class="small" id="bulkInfo">Выбрано: 0</div>
+          <button class="secondary" onclick="selectVisibleTasks()">Выбрать все видимые</button>
+          <button class="secondary" onclick="clearTaskSelection()">Снять выбор</button>
+          <button class="secondary" onclick="markSelectedDone()">Пометить выбранные</button>
+          <button class="danger" onclick="deleteSelectedTasks()">Удалить выбранные</button>
         </div>
         <div id="taskList"></div>
       </div>
@@ -1410,6 +1424,7 @@ let tasks = JSON.parse(localStorage.getItem("bux_rem_tasks_v4") || "[]");
 let firms = JSON.parse(localStorage.getItem("bux_rem_firms_v4") || "[]");
 let current = new Date();
 let deferredPrompt = null;
+let selectedTaskIds = new Set();
 const fmt = new Intl.NumberFormat("ru-RU");
 const typeNames = {report:"Отчёт",pay:"Платёж",salary:"Зарплата",didox:"Didox / ЭСФ",stat:"Статистика",itpark:"IT Park",other:"Другое"};
 const typeClass = {report:"report",pay:"pay",salary:"pay",didox:"",stat:"report",itpark:"report",other:""};
@@ -1789,8 +1804,8 @@ function toggleDone(id){
   render();
   vibrate();
 }
-function delTask(id){tasks=tasks.filter(x=>x.id!==id);saveTasks();render()}
-function clearDone(){tasks=tasks.filter(x=>!x.done);saveTasks();render()}
+function delTask(id){selectedTaskIds.delete(id);tasks=tasks.filter(x=>x.id!==id);saveTasks();render()}
+function clearDone(){tasks=tasks.filter(x=>!x.done);selectedTaskIds.clear();saveTasks();render()}
 function addDefaultTemplates(){
   const year=new Date().getFullYear(), month=new Date().getMonth();
   const templates=[
@@ -1813,8 +1828,12 @@ function addDefaultTemplates(){
 }
 function filtered(){
   const q=clean(search?.value||"").toLowerCase(), fc=filterCompany?.value||"", ft=filterType?.value||"", fs=filterStatus?.value||"", today=todayStr();
+  const dateFrom = document.getElementById("filterDateFrom")?.value || "";
+  const dateTo = document.getElementById("filterDateTo")?.value || "";
   return tasks.filter(t=>{
     if(fc && t.firmId!==fc) return false; if(ft && t.type!==ft) return false;
+    if(dateFrom && String(t.dueDate || "") < dateFrom) return false;
+    if(dateTo && String(t.dueDate || "") > dateTo) return false;
     const firm=getFirm(t.firmId);
     if(q && ![t.company,t.title,t.comment,t.amount,typeNames[t.type],firm.inn,firm.bank,firm.account].join(" ").toLowerCase().includes(q)) return false;
     const diff=daysBetween(today,t.dueDate);
@@ -1831,10 +1850,12 @@ function renderStats(){
 }
 function renderList(){
   const arr=filtered();
+  selectedTaskIds = new Set([...selectedTaskIds].filter(id => tasks.some(t => t.id === id)));
   taskList.innerHTML=arr.map(t=>{
     const diff=daysBetween(todayStr(),t.dueDate), late=diff<0&&!t.done, status=t.done?"Выполнено":late?"Просрочено":diff===0?"Сегодня":`Через ${diff} дн.`;
     const cls=late?"bad":typeClass[t.type]||"", firm=getFirm(t.firmId);
     return `<div class="task ${t.done?'done':''}">
+      <label class="task-select"><input type="checkbox" ${selectedTaskIds.has(t.id) ? "checked" : ""} onchange="toggleTaskSelection('${t.id}', this.checked)"><span>Выбрать</span></label>
       <div class="task-title">${escapeHtml(t.title)}</div>
       <span class="tag">${escapeHtml(t.company)}</span><span class="tag ${cls}">${escapeHtml(typeNames[t.type])}</span><span class="tag ${late?'bad':''}">${escapeHtml(status)}</span>${t.amount?`<span class="tag pay">${escapeHtml(money(t.amount))}</span>`:""}
       <div class="small">Срок: ${escapeHtml(formatDate(t.dueDate))} • Повтор: ${repeatName(t.repeat)} • Напомнить за ${t.remindBefore} дн.</div>
@@ -1842,7 +1863,63 @@ function renderList(){
       ${t.comment?`<div class="small" style="margin-top:6px">${escapeHtml(t.comment)}</div>`:""}
       <div class="btns"><button class="secondary" onclick="toggleDone('${t.id}')">${t.done?'Вернуть':'Готово'}</button><button class="secondary" onclick="copyPaymentText('${t.id}')">Текст платежа</button><button class="danger" onclick="delTask('${t.id}')">Удалить</button></div>
     </div>`;
-  }).join("") || `<div class="task ${t.done?'done':''}">Нет напоминаний по выбранным фильтрам.</div>`;
+  }).join("") || `<div class="task">Нет напоминаний по выбранным фильтрам.</div>`;
+  updateBulkInfo();
+}
+
+function updateBulkInfo(){
+  const el = document.getElementById("bulkInfo");
+  if(el) el.textContent = "Выбрано: " + selectedTaskIds.size;
+}
+
+function toggleTaskSelection(id, checked){
+  if(checked) selectedTaskIds.add(id);
+  else selectedTaskIds.delete(id);
+  updateBulkInfo();
+}
+
+function selectVisibleTasks(){
+  filtered().forEach(t => selectedTaskIds.add(t.id));
+  renderList();
+}
+
+function clearTaskSelection(){
+  selectedTaskIds.clear();
+  renderList();
+}
+
+function completeTaskById(id){
+  const t = tasks.find(x => x.id === id);
+  if(!t || t.done) return;
+  if(t.repeat !== "none"){
+    const nd = nextDate(t.dueDate, t.repeat);
+    if(nd && !taskExists(t.firmId, nd, t.title, t.type)){
+      tasks.unshift({...t, id:uid(), dueDate:nd, done:false, created:new Date().toISOString()});
+    }
+  }
+  t.done = true;
+}
+
+function markSelectedDone(){
+  if(!selectedTaskIds.size){toast("Выберите задачи");return}
+  selectedTaskIds.forEach(id => completeTaskById(id));
+  selectedTaskIds.clear();
+  saveTasks();
+  render();
+  vibrate();
+  toast("Выбранные задачи помечены");
+}
+
+function deleteSelectedTasks(){
+  if(!selectedTaskIds.size){toast("Выберите задачи");return}
+  const count = selectedTaskIds.size;
+  if(!confirm("Удалить выбранные задачи: " + count + "?")) return;
+  tasks = tasks.filter(t => !selectedTaskIds.has(t.id));
+  selectedTaskIds.clear();
+  saveTasks();
+  render();
+  vibrate();
+  toast("Удалено задач: " + count);
 }
 
 let selectedCalendarDate = "";
