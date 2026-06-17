@@ -818,6 +818,92 @@ body[data-theme="light"] .result{
   background:#ffffff;
   color:#0f172a;
 }
+body[data-theme="aurora"]{
+  --panel:#12182f;
+  --card:rgba(103,232,249,.09);
+  --line:rgba(167,139,250,.24);
+  --text:#f8fafc;
+  --muted:#b6c3d8;
+  --blue:#22d3ee;
+  --violet:#a78bfa;
+  --green:#5eead4;
+  --yellow:#fde68a;
+  --red:#fb7185;
+  background:
+    linear-gradient(135deg,rgba(34,211,238,.22),transparent 28%),
+    linear-gradient(225deg,rgba(167,139,250,.25),transparent 34%),
+    linear-gradient(180deg,#08111f,#18203d 52%,#080b18);
+}
+body[data-theme="mint"]{
+  --panel:#10251f;
+  --card:rgba(236,253,245,.08);
+  --line:rgba(110,231,183,.22);
+  --text:#f7fffb;
+  --muted:#a7c8bd;
+  --blue:#38bdf8;
+  --violet:#2dd4bf;
+  --green:#86efac;
+  --yellow:#fde68a;
+  --red:#f87171;
+  background:
+    radial-gradient(circle at 12% 12%,rgba(134,239,172,.18),transparent 28%),
+    radial-gradient(circle at 88% 20%,rgba(56,189,248,.16),transparent 28%),
+    linear-gradient(180deg,#071411,#12352c 54%,#07110f);
+}
+body[data-theme="sunrise"]{
+  --panel:#211827;
+  --card:rgba(255,247,237,.08);
+  --line:rgba(253,186,116,.24);
+  --text:#fff7ed;
+  --muted:#f8c7a0;
+  --blue:#38bdf8;
+  --violet:#fb7185;
+  --green:#34d399;
+  --yellow:#fbbf24;
+  --red:#f43f5e;
+  background:
+    radial-gradient(circle at 18% 4%,rgba(251,191,36,.2),transparent 30%),
+    radial-gradient(circle at 86% 14%,rgba(251,113,133,.22),transparent 30%),
+    linear-gradient(180deg,#1b1020,#2c1d2e 54%,#100b16);
+}
+body[data-theme="paper"]{
+  --panel:#ffffff;
+  --card:rgba(15,23,42,.055);
+  --line:rgba(15,23,42,.14);
+  --text:#14213d;
+  --muted:#61708a;
+  --blue:#2563eb;
+  --violet:#7c3aed;
+  --green:#059669;
+  --yellow:#d97706;
+  --red:#e11d48;
+  color:var(--text);
+  background:
+    linear-gradient(135deg,rgba(37,99,235,.08),transparent 30%),
+    linear-gradient(225deg,rgba(5,150,105,.08),transparent 35%),
+    linear-gradient(180deg,#fbfcff,#eef4ff 54%,#f7faf8);
+}
+body[data-theme="aurora"] .top,
+body[data-theme="aurora"] .bottom,
+body[data-theme="mint"] .top,
+body[data-theme="mint"] .bottom,
+body[data-theme="sunrise"] .top,
+body[data-theme="sunrise"] .bottom{
+  background:rgba(7,17,31,.86);
+}
+body[data-theme="paper"] .top,
+body[data-theme="paper"] .bottom{
+  background:rgba(255,255,255,.9);
+}
+body[data-theme="paper"] input,
+body[data-theme="paper"] select,
+body[data-theme="paper"] textarea,
+body[data-theme="paper"] .task,
+body[data-theme="paper"] .firm-card,
+body[data-theme="paper"] .result{
+  background:#ffffff;
+  color:#14213d;
+}
 .preloader{
   position:fixed;
   inset:0;
@@ -859,7 +945,8 @@ body[data-theme="light"] .result{
   align-items:center;
 }
 .icon-btn,
-.lang-select{
+.lang-select,
+.theme-select{
   min-height:40px;
   border-radius:14px;
   border:1px solid var(--line);
@@ -868,7 +955,7 @@ body[data-theme="light"] .result{
   padding:9px 11px;
   font-weight:900;
 }
-.lang-select{width:auto}
+.lang-select,.theme-select{width:auto}
 .hero-lab{
   position:relative;
   overflow:hidden;
@@ -1000,7 +1087,8 @@ body[data-theme="light"] .contact-panel{
     margin:10px 0 0;
     justify-content:flex-start;
   }
-  .lang-select{
+  .lang-select,
+  .theme-select{
     flex:1;
     min-width:0;
   }
@@ -1069,7 +1157,13 @@ body[data-theme="light"] .contact-panel{
         <option value="uz">UZ</option>
         <option value="en">EN</option>
       </select>
-      <button id="themeToggle" class="icon-btn" onclick="toggleTheme()" title="Сменить тему">◐</button>
+      <select id="themeSelect" class="theme-select" onchange="applyTheme(this.value)" aria-label="Тема">
+        <option value="dark">Ночь</option>
+        <option value="aurora">Аврора</option>
+        <option value="mint">Мята</option>
+        <option value="sunrise">Солнце</option>
+        <option value="paper">Светлая</option>
+      </select>
     </div>
     <button id="installBtn" class="install">Установить</button>
   </div>
@@ -2305,11 +2399,20 @@ function creativeSetLang(lang){
   });
 }
 
-function toggleTheme(){
-  const next = document.body.classList.contains("light-theme") ? "dark" : "light";
-  document.body.classList.toggle("light-theme", next === "light");
+function applyTheme(theme){
+  const next = theme === "light" ? "paper" : (theme || "dark");
+  document.body.classList.toggle("light-theme", next === "light" || next === "paper");
   document.body.dataset.theme = next;
   localStorage.setItem("creative_theme", next);
+  const select = document.getElementById("themeSelect");
+  if(select) select.value = next;
+}
+
+function toggleTheme(){
+  const order = ["dark","aurora","mint","sunrise","paper"];
+  const currentTheme = document.body.dataset.theme || "dark";
+  const next = order[(order.indexOf(currentTheme) + 1) % order.length] || "dark";
+  applyTheme(next);
 }
 
 function animateCounts(){
@@ -2413,10 +2516,7 @@ function initCreativeBackground(){
 
 function creativeInit(){
   const savedTheme = localStorage.getItem("creative_theme");
-  if(savedTheme === "light"){
-    document.body.classList.add("light-theme");
-    document.body.dataset.theme = "light";
-  }
+  applyTheme(savedTheme || "dark");
   const lang = localStorage.getItem("creative_lang") || "ru";
   const langEl = document.getElementById("creativeLang");
   if(langEl) langEl.value = lang;
