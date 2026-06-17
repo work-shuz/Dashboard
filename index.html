@@ -377,19 +377,16 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
 }
 
 
-/* ===== SELECTIVE FIRM CHECKBOXES ===== */
+/* ===== FIRM CHECKBOX LIST WITHOUT DROPDOWN OPTION ===== */
 .firm-checks{
-  display:none;
+  display:grid;
   grid-template-columns:1fr;
   gap:8px;
-  margin-top:10px;
+  margin-top:8px;
   padding:10px;
   border:1px solid rgba(255,255,255,.10);
   background:rgba(255,255,255,.045);
   border-radius:16px;
-}
-.firm-checks.active{
-  display:grid;
 }
 .firm-check{
   display:flex;
@@ -410,27 +407,27 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
   width:18px;
   height:18px;
   accent-color:#38bdf8;
+  flex:0 0 auto;
 }
 .firm-check span{
   font-size:13px;
   line-height:1.25;
 }
-.firm-check-tools{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-bottom:2px;
+.firm-check.all{
+  background:rgba(56,189,248,.10);
+  border-color:rgba(56,189,248,.22);
 }
-.firm-check-tools button{
-  padding:8px 10px;
-  border-radius:12px;
+.firm-checks-title{
   font-size:12px;
+  color:var(--muted);
+  margin-bottom:2px;
 }
 @media(min-width:1024px){
   .firm-checks{
     grid-template-columns:1fr 1fr;
   }
-  .firm-check-tools{
+  .firm-checks-title,
+  .firm-check.all{
     grid-column:1/-1;
   }
 }
@@ -461,11 +458,10 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
       <div class="grid">
         <div>
           <div class="panel">
-            <h3>Быстро добавить напоминание</h3>\n            <div class="small" style="margin-bottom:10px">В поле «Фирма» можно выбрать одну фирму, все фирмы сразу или несколько фирм галочками. При повторе задачи создаются автоматически: каждый месяц — на 12 месяцев вперёд, квартал — на 8 кварталов, год — на 4 года.</div>
+            <h3>Быстро добавить напоминание</h3>\n            <div class="small" style="margin-bottom:10px">Рядом с фирмами поставьте галочки: можно выбрать одну, несколько или все фирмы. При повторе задачи создаются автоматически: каждый месяц — на 12 месяцев вперёд, квартал — на 8 кварталов, год — на 4 года.</div>
             <div class="form-grid">
               <div><label>Фирма</label>
-        <select id="company" onchange="toggleFirmChecks('main')"></select>
-        <div id="firmCheckboxes" class="firm-checks"></div></div>
+            <div id="firmCheckboxes" class="firm-checks"></div></div>
               <div><label>Дата срока</label><input id="dueDate" type="date"></div>
               <div><label>Тип</label><select id="type">
                 <option value="report">Отчёт</option><option value="pay">Платёж</option><option value="salary">Зарплата</option>
@@ -646,7 +642,6 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
     <div class="form-grid">
       <div>
         <label>Фирма</label>
-        <select id="modalCompany" onchange="toggleFirmChecks('modal')"></select>
         <div id="modalFirmCheckboxes" class="firm-checks"></div>
       </div>
       <div>
@@ -837,21 +832,11 @@ function fillFirmSelects(){
     .map(f=>`<option value="${escapeHtml(f.id)}">${escapeHtml(f.name)}</option>`)
     .join("");
 
-  const addOpts = `<option value="__all__">Все фирмы сразу</option><option value="__manual__">Выбрать фирмы галочками</option>` + opts;
-
-  const companySelect = document.getElementById("company");
-  if(companySelect) companySelect.innerHTML = addOpts;
-
   const filterCompanySelect = document.getElementById("filterCompany");
   if(filterCompanySelect) filterCompanySelect.innerHTML = `<option value="">Все фирмы</option>` + opts;
 
-  const modalCompanySelect = document.getElementById("modalCompany");
-  if(modalCompanySelect) modalCompanySelect.innerHTML = addOpts;
-
-  renderFirmChecks("firmCheckboxes", "mainFirm");
-  renderFirmChecks("modalFirmCheckboxes", "modalFirm");
-  toggleFirmChecks("main");
-  toggleFirmChecks("modal");
+  renderFirmCheckboxList("firmCheckboxes", "mainFirm");
+  renderFirmCheckboxList("modalFirmCheckboxes", "modalFirm");
 }
 function getFirm(id){return firms.find(f=>f.id===id) || firms[0] || {name:""}}
 function addMonthsKeepDay(date, months){
@@ -888,65 +873,49 @@ function taskExists(firmId, dueDateValue, taskTitle, taskType){
 }
 
 
-function renderFirmChecks(containerId, prefix){
+function renderFirmCheckboxList(containerId, namePrefix){
   const box = document.getElementById(containerId);
   if(!box) return;
 
-  const controls = `<div class="firm-check-tools">
-    <button type="button" class="secondary" onclick="setFirmChecks('${containerId}', true)">Выбрать все</button>
-    <button type="button" class="secondary" onclick="setFirmChecks('${containerId}', false)">Снять все</button>
-  </div>`;
-
-  box.innerHTML = controls + firms.map(f => `
+  box.innerHTML = `
+    <div class="firm-checks-title">Отметьте нужные фирмы:</div>
+    <label class="firm-check all">
+      <input type="checkbox" data-all="${namePrefix}" onchange="toggleAllFirmChecks('${containerId}', this.checked)">
+      <span>Все фирмы</span>
+    </label>
+  ` + firms.map((f, index) => `
     <label class="firm-check">
-      <input type="checkbox" name="${prefix}" value="${escapeHtml(f.id)}">
+      <input type="checkbox" name="${namePrefix}" value="${escapeHtml(f.id)}" ${index === 0 ? "checked" : ""} onchange="syncAllFirmCheck('${containerId}', '${namePrefix}')">
       <span>${escapeHtml(f.name)}</span>
     </label>
   `).join("");
+
+  syncAllFirmCheck(containerId, namePrefix);
 }
 
-function toggleFirmChecks(place){
-  const selectId = place === "modal" ? "modalCompany" : "company";
-  const boxId = place === "modal" ? "modalFirmCheckboxes" : "firmCheckboxes";
-  const sel = document.getElementById(selectId);
-  const box = document.getElementById(boxId);
-  if(!sel || !box) return;
-
-  if(sel.value === "__manual__"){
-    box.classList.add("active");
-    const checked = box.querySelectorAll('input[type="checkbox"]:checked').length;
-    if(!checked){
-      const first = box.querySelector('input[type="checkbox"]');
-      if(first) first.checked = true;
-    }
-  }else{
-    box.classList.remove("active");
-  }
-}
-
-function setFirmChecks(containerId, checked){
+function toggleAllFirmChecks(containerId, checked){
   const box = document.getElementById(containerId);
   if(!box) return;
-  box.querySelectorAll('input[type="checkbox"]').forEach(input => input.checked = checked);
+  box.querySelectorAll('input[name]').forEach(input => input.checked = checked);
+}
+
+function syncAllFirmCheck(containerId, namePrefix){
+  const box = document.getElementById(containerId);
+  if(!box) return;
+
+  const items = Array.from(box.querySelectorAll(`input[name="${namePrefix}"]`));
+  const all = box.querySelector(`input[data-all="${namePrefix}"]`);
+  if(!items.length || !all) return;
+
+  all.checked = items.every(input => input.checked);
 }
 
 function getSelectedFirmIds(place){
-  const selectId = place === "modal" ? "modalCompany" : "company";
   const boxId = place === "modal" ? "modalFirmCheckboxes" : "firmCheckboxes";
-  const sel = document.getElementById(selectId);
-  if(!sel) return [];
+  const box = document.getElementById(boxId);
+  if(!box) return [];
 
-  if(sel.value === "__all__"){
-    return firms.map(f => f.id);
-  }
-
-  if(sel.value === "__manual__"){
-    const box = document.getElementById(boxId);
-    if(!box) return [];
-    return Array.from(box.querySelectorAll('input[type="checkbox"]:checked')).map(input => input.value);
-  }
-
-  return [sel.value];
+  return Array.from(box.querySelectorAll('input[name]:checked')).map(input => input.value);
 }
 
 
@@ -974,14 +943,12 @@ function addTasksByCompanySelection(companySelection, data){
     targetFirms = firms.filter(f => companySelection.includes(f.id));
   }else if(companySelection === "__all__"){
     targetFirms = firms;
-  }else if(companySelection === "__manual__"){
-    targetFirms = [];
   }else{
     targetFirms = firms.filter(f => f.id === companySelection);
   }
 
   if(!targetFirms.length){
-    alert("Выберите хотя бы одну фирму.");
+    alert("Отметьте хотя бы одну фирму.");
     return 0;
   }
 
@@ -1138,7 +1105,6 @@ function openDateModal(date){
   }
 
   fillFirmSelects();
-  toggleFirmChecks("modal");
 
   document.getElementById("modalType").value = "report";
   document.getElementById("modalRepeat").value = "none";
