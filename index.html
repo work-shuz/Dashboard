@@ -377,58 +377,103 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
 }
 
 
-/* ===== FIRM CHECKBOX LIST WITHOUT DROPDOWN OPTION ===== */
-.firm-checks{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:8px;
-  margin-top:8px;
-  padding:10px;
-  border:1px solid rgba(255,255,255,.10);
-  background:rgba(255,255,255,.045);
-  border-radius:16px;
+/* ===== POPUP FIRM SELECTOR ===== */
+.firm-picker{
+  position:relative;
 }
-.firm-check{
+.firm-picker-display{
+  width:100%;
+  min-height:48px;
   display:flex;
   align-items:center;
+  justify-content:space-between;
   gap:10px;
-  padding:10px;
-  border-radius:14px;
-  background:rgba(255,255,255,.045);
-  border:1px solid rgba(255,255,255,.08);
+  padding:13px 14px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06);
+  color:var(--text);
   cursor:pointer;
   user-select:none;
 }
-.firm-check:hover{
+.firm-picker-display:hover{
+  border-color:rgba(56,189,248,.45);
   background:rgba(56,189,248,.08);
-  border-color:rgba(56,189,248,.25);
 }
-.firm-check input{
+.firm-picker-placeholder{
+  color:var(--muted);
+}
+.firm-picker-arrow{
+  color:var(--muted);
+  font-size:14px;
+}
+.firm-picker-menu{
+  display:none;
+  position:absolute;
+  left:0;
+  right:0;
+  top:calc(100% + 8px);
+  z-index:220;
+  max-height:320px;
+  overflow:auto;
+  padding:10px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(2,6,23,.98));
+  box-shadow:0 24px 70px rgba(0,0,0,.45);
+}
+.firm-picker.open .firm-picker-menu{
+  display:block;
+}
+.firm-picker-option{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:11px 10px;
+  border-radius:14px;
+  cursor:pointer;
+  border:1px solid transparent;
+}
+.firm-picker-option:hover{
+  background:rgba(56,189,248,.08);
+  border-color:rgba(56,189,248,.18);
+}
+.firm-picker-option input{
   width:18px;
   height:18px;
   accent-color:#38bdf8;
   flex:0 0 auto;
 }
-.firm-check span{
+.firm-picker-option span{
   font-size:13px;
   line-height:1.25;
 }
-.firm-check.all{
+.firm-picker-option.all{
   background:rgba(56,189,248,.10);
-  border-color:rgba(56,189,248,.22);
+  border-color:rgba(56,189,248,.20);
+  margin-bottom:6px;
 }
-.firm-checks-title{
+.firm-picker-actions{
+  display:flex;
+  gap:8px;
+  padding-top:8px;
+  margin-top:8px;
+  border-top:1px solid rgba(255,255,255,.10);
+}
+.firm-picker-actions button{
+  flex:1;
+  padding:9px 10px;
+  border-radius:12px;
   font-size:12px;
-  color:var(--muted);
-  margin-bottom:2px;
 }
-@media(min-width:1024px){
-  .firm-checks{
-    grid-template-columns:1fr 1fr;
-  }
-  .firm-checks-title,
-  .firm-check.all{
-    grid-column:1/-1;
+@media(max-width:520px){
+  .firm-picker-menu{
+    position:fixed;
+    left:12px;
+    right:12px;
+    top:auto;
+    bottom:88px;
+    max-height:55vh;
   }
 }
 
@@ -458,10 +503,16 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
       <div class="grid">
         <div>
           <div class="panel">
-            <h3>Быстро добавить напоминание</h3>\n            <div class="small" style="margin-bottom:10px">Рядом с фирмами поставьте галочки: можно выбрать одну, несколько или все фирмы. При повторе задачи создаются автоматически: каждый месяц — на 12 месяцев вперёд, квартал — на 8 кварталов, год — на 4 года.</div>
+            <h3>Быстро добавить напоминание</h3>\n            <div class="small" style="margin-bottom:10px">Нажмите на строку «Выберите фирмы», затем отметьте нужные фирмы галочками. При повторе задачи создаются автоматически: каждый месяц — на 12 месяцев вперёд, квартал — на 8 кварталов, год — на 4 года.</div>
             <div class="form-grid">
               <div><label>Фирма</label>
-            <div id="firmCheckboxes" class="firm-checks"></div></div>
+            <div id="firmPicker" class="firm-picker">
+              <div class="firm-picker-display" onclick="toggleFirmPicker('main')">
+                <span id="firmPickerText" class="firm-picker-placeholder">Выберите фирмы</span>
+                <span class="firm-picker-arrow">▾</span>
+              </div>
+              <div id="firmPickerMenu" class="firm-picker-menu"></div>
+            </div></div>
               <div><label>Дата срока</label><input id="dueDate" type="date"></div>
               <div><label>Тип</label><select id="type">
                 <option value="report">Отчёт</option><option value="pay">Платёж</option><option value="salary">Зарплата</option>
@@ -642,7 +693,13 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
     <div class="form-grid">
       <div>
         <label>Фирма</label>
-        <div id="modalFirmCheckboxes" class="firm-checks"></div>
+        <div id="modalFirmPicker" class="firm-picker">
+          <div class="firm-picker-display" onclick="toggleFirmPicker('modal')">
+            <span id="modalFirmPickerText" class="firm-picker-placeholder">Выберите фирмы</span>
+            <span class="firm-picker-arrow">▾</span>
+          </div>
+          <div id="modalFirmPickerMenu" class="firm-picker-menu"></div>
+        </div>
       </div>
       <div>
         <label>Тип</label>
@@ -835,8 +892,10 @@ function fillFirmSelects(){
   const filterCompanySelect = document.getElementById("filterCompany");
   if(filterCompanySelect) filterCompanySelect.innerHTML = `<option value="">Все фирмы</option>` + opts;
 
-  renderFirmCheckboxList("firmCheckboxes", "mainFirm");
-  renderFirmCheckboxList("modalFirmCheckboxes", "modalFirm");
+  renderFirmPicker("firmPickerMenu", "mainFirm");
+  renderFirmPicker("modalFirmPickerMenu", "modalFirm");
+  updateFirmPickerText("main");
+  updateFirmPickerText("modal");
 }
 function getFirm(id){return firms.find(f=>f.id===id) || firms[0] || {name:""}}
 function addMonthsKeepDay(date, months){
@@ -873,51 +932,113 @@ function taskExists(firmId, dueDateValue, taskTitle, taskType){
 }
 
 
-function renderFirmCheckboxList(containerId, namePrefix){
-  const box = document.getElementById(containerId);
-  if(!box) return;
+function renderFirmPicker(menuId, namePrefix){
+  const menu = document.getElementById(menuId);
+  if(!menu) return;
 
-  box.innerHTML = `
-    <div class="firm-checks-title">Отметьте нужные фирмы:</div>
-    <label class="firm-check all">
-      <input type="checkbox" data-all="${namePrefix}" onchange="toggleAllFirmChecks('${containerId}', this.checked)">
+  menu.innerHTML = `
+    <label class="firm-picker-option all">
+      <input type="checkbox" data-all="${namePrefix}" onchange="toggleFirmPickerAll('${namePrefix}', this.checked)">
       <span>Все фирмы</span>
     </label>
-  ` + firms.map((f, index) => `
-    <label class="firm-check">
-      <input type="checkbox" name="${namePrefix}" value="${escapeHtml(f.id)}" ${index === 0 ? "checked" : ""} onchange="syncAllFirmCheck('${containerId}', '${namePrefix}')">
+  ` + firms.map(f => `
+    <label class="firm-picker-option">
+      <input type="checkbox" name="${namePrefix}" value="${escapeHtml(f.id)}" onchange="syncFirmPickerAll('${namePrefix}'); updateFirmPickerTextByPrefix('${namePrefix}')">
       <span>${escapeHtml(f.name)}</span>
     </label>
-  `).join("");
-
-  syncAllFirmCheck(containerId, namePrefix);
+  `).join("") + `
+    <div class="firm-picker-actions">
+      <button type="button" class="secondary" onclick="clearFirmPicker('${namePrefix}')">Очистить</button>
+      <button type="button" onclick="closeFirmPickerByPrefix('${namePrefix}')">Готово</button>
+    </div>
+  `;
 }
 
-function toggleAllFirmChecks(containerId, checked){
-  const box = document.getElementById(containerId);
-  if(!box) return;
-  box.querySelectorAll('input[name]').forEach(input => input.checked = checked);
+function prefixToPlace(prefix){
+  return prefix === "modalFirm" ? "modal" : "main";
 }
 
-function syncAllFirmCheck(containerId, namePrefix){
-  const box = document.getElementById(containerId);
-  if(!box) return;
+function placeToPrefix(place){
+  return place === "modal" ? "modalFirm" : "mainFirm";
+}
 
-  const items = Array.from(box.querySelectorAll(`input[name="${namePrefix}"]`));
-  const all = box.querySelector(`input[data-all="${namePrefix}"]`);
+function placeToPickerId(place){
+  return place === "modal" ? "modalFirmPicker" : "firmPicker";
+}
+
+function placeToTextId(place){
+  return place === "modal" ? "modalFirmPickerText" : "firmPickerText";
+}
+
+function toggleFirmPicker(place){
+  const picker = document.getElementById(placeToPickerId(place));
+  if(!picker) return;
+
+  document.querySelectorAll(".firm-picker.open").forEach(p => {
+    if(p !== picker) p.classList.remove("open");
+  });
+
+  picker.classList.toggle("open");
+}
+
+function closeFirmPickerByPrefix(prefix){
+  const place = prefixToPlace(prefix);
+  const picker = document.getElementById(placeToPickerId(place));
+  if(picker) picker.classList.remove("open");
+}
+
+function toggleFirmPickerAll(prefix, checked){
+  document.querySelectorAll(`input[name="${prefix}"]`).forEach(input => input.checked = checked);
+  updateFirmPickerTextByPrefix(prefix);
+}
+
+function syncFirmPickerAll(prefix){
+  const items = Array.from(document.querySelectorAll(`input[name="${prefix}"]`));
+  const all = document.querySelector(`input[data-all="${prefix}"]`);
   if(!items.length || !all) return;
-
   all.checked = items.every(input => input.checked);
 }
 
-function getSelectedFirmIds(place){
-  const boxId = place === "modal" ? "modalFirmCheckboxes" : "firmCheckboxes";
-  const box = document.getElementById(boxId);
-  if(!box) return [];
-
-  return Array.from(box.querySelectorAll('input[name]:checked')).map(input => input.value);
+function clearFirmPicker(prefix){
+  document.querySelectorAll(`input[name="${prefix}"]`).forEach(input => input.checked = false);
+  const all = document.querySelector(`input[data-all="${prefix}"]`);
+  if(all) all.checked = false;
+  updateFirmPickerTextByPrefix(prefix);
 }
 
+function updateFirmPickerTextByPrefix(prefix){
+  updateFirmPickerText(prefixToPlace(prefix));
+}
+
+function updateFirmPickerText(place){
+  const prefix = placeToPrefix(place);
+  const text = document.getElementById(placeToTextId(place));
+  if(!text) return;
+
+  const selectedIds = getSelectedFirmIds(place);
+  text.classList.toggle("firm-picker-placeholder", selectedIds.length === 0);
+
+  if(selectedIds.length === 0){
+    text.textContent = "Выберите фирмы";
+  }else if(selectedIds.length === firms.length){
+    text.textContent = "Все фирмы";
+  }else if(selectedIds.length === 1){
+    const firm = firms.find(f => f.id === selectedIds[0]);
+    text.textContent = firm ? firm.name : "1 фирма";
+  }else{
+    text.textContent = "Выбрано фирм: " + selectedIds.length;
+  }
+}
+
+function getSelectedFirmIds(place){
+  const prefix = placeToPrefix(place);
+  return Array.from(document.querySelectorAll(`input[name="${prefix}"]:checked`)).map(input => input.value);
+}
+
+document.addEventListener("click", function(e){
+  if(e.target.closest(".firm-picker")) return;
+  document.querySelectorAll(".firm-picker.open").forEach(p => p.classList.remove("open"));
+});
 
 function createTaskObject(firm, data, dateOverride){
   return {
@@ -948,7 +1069,7 @@ function addTasksByCompanySelection(companySelection, data){
   }
 
   if(!targetFirms.length){
-    alert("Отметьте хотя бы одну фирму.");
+    alert("Сначала выберите хотя бы одну фирму.");
     return 0;
   }
 
@@ -992,6 +1113,7 @@ function addTask(){
   title.value = "";
   comment.value = "";
   amount.value = "";
+  clearFirmPicker("mainFirm");
 
   toast(count > 1 ? "Добавлено напоминаний: " + count : "Напоминание добавлено");
 }
@@ -1105,6 +1227,7 @@ function openDateModal(date){
   }
 
   fillFirmSelects();
+  clearFirmPicker("modalFirm");
 
   document.getElementById("modalType").value = "report";
   document.getElementById("modalRepeat").value = "none";
