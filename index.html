@@ -294,6 +294,88 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
   }
 }
 
+
+/* ===== CLICKABLE CALENDAR DATE MODAL ===== */
+.day{
+  cursor:pointer;
+  transition:.18s ease;
+}
+.day:hover{
+  border-color:rgba(56,189,248,.55);
+  background:rgba(56,189,248,.08);
+  transform:translateY(-1px);
+}
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  z-index:200;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(2,6,23,.72);
+  backdrop-filter:blur(14px);
+}
+.modal-overlay.active{
+  display:flex;
+}
+.modal-box{
+  width:min(680px,100%);
+  max-height:92vh;
+  overflow:auto;
+  border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(2,6,23,.98));
+  border-radius:28px;
+  padding:18px;
+  box-shadow:0 30px 80px rgba(0,0,0,.45);
+}
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+  margin-bottom:14px;
+}
+.modal-head h3{
+  margin:0 0 4px;
+  font-size:20px;
+}
+.modal-close{
+  width:42px;
+  height:42px;
+  border-radius:15px;
+  padding:0;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14);
+  font-size:22px;
+}
+.date-tasks{
+  margin:10px 0 14px;
+}
+.date-task-item{
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.05);
+  border-radius:16px;
+  padding:10px;
+  margin-bottom:8px;
+}
+.date-task-item b{
+  display:block;
+  margin-bottom:4px;
+}
+@media(max-width:520px){
+  .modal-overlay{
+    align-items:flex-end;
+    padding:0;
+  }
+  .modal-box{
+    width:100%;
+    max-height:88vh;
+    border-radius:26px 26px 0 0;
+    padding:16px;
+  }
+}
+
 </style>
 
 </head>
@@ -308,7 +390,7 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
     <section id="home" class="page active">
       <div class="hero">
         <h2>Календарь отчётов и платежей</h2>
-        <p>Напоминания по фирмам, реквизиты, платежи, отчёты, Didox, зарплата и экспорт в Google Calendar. Исправлено отображение дат без сдвига на 1 день.</p>
+        <p>Напоминания по фирмам, реквизиты, платежи, отчёты, Didox, зарплата и экспорт в Google Calendar. Нажмите на дату в календаре, чтобы быстро добавить напоминание. Исправлено отображение дат без сдвига на 1 день.</p>
       </div>
       <div class="stats">
         <div class="stat"><span>Сегодня</span><b id="statToday">0</b></div>
@@ -487,6 +569,78 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
   <button class="nav" onclick="showPage('help')" data-page="help"><span>ℹ️</span>Помощь</button>
 </nav>
 
+
+<div id="dateModal" class="modal-overlay" onclick="if(event.target.id==='dateModal') closeDateModal()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <h3 id="dateModalTitle">Добавить напоминание</h3>
+        <div id="dateModalSubtitle" class="small"></div>
+      </div>
+      <button class="modal-close" onclick="closeDateModal()">×</button>
+    </div>
+
+    <div id="dateTasks" class="date-tasks"></div>
+
+    <div class="form-grid">
+      <div>
+        <label>Фирма</label>
+        <select id="modalCompany"></select>
+      </div>
+      <div>
+        <label>Тип</label>
+        <select id="modalType">
+          <option value="report">Отчёт</option>
+          <option value="pay">Платёж</option>
+          <option value="salary">Зарплата</option>
+          <option value="didox">Didox / ЭСФ</option>
+          <option value="stat">Статистика</option>
+          <option value="itpark">IT Park</option>
+          <option value="other">Другое</option>
+        </select>
+      </div>
+      <div>
+        <label>Повтор</label>
+        <select id="modalRepeat">
+          <option value="none">Без повтора</option>
+          <option value="monthly">Каждый месяц</option>
+          <option value="quarterly">Каждый квартал</option>
+          <option value="yearly">Каждый год</option>
+        </select>
+      </div>
+      <div>
+        <label>Напомнить за</label>
+        <select id="modalRemind">
+          <option value="0">В день срока</option>
+          <option value="1">За 1 день</option>
+          <option value="3" selected>За 3 дня</option>
+          <option value="5">За 5 дней</option>
+          <option value="7">За 7 дней</option>
+        </select>
+      </div>
+      <div>
+        <label>Сумма платежа</label>
+        <input id="modalAmount" inputmode="decimal" placeholder="если есть">
+      </div>
+      <div>
+        <label>Время для календаря</label>
+        <input id="modalTime" type="time" value="09:00">
+      </div>
+    </div>
+
+    <label style="margin-top:10px">Название задачи</label>
+    <input id="modalTitle" placeholder="Например: Оплатить НДС / Сдать отчёт">
+
+    <label style="margin-top:10px">Комментарий</label>
+    <textarea id="modalComment" placeholder="Период, реквизиты, ссылка, примечание"></textarea>
+
+    <div class="btns">
+      <button onclick="addModalTask()">Добавить на эту дату</button>
+      <button class="secondary" onclick="closeDateModal()">Закрыть</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <script>
@@ -609,6 +763,8 @@ function fillFirmSelects(){
   const opts = firms.map(f=>`<option value="${escapeHtml(f.id)}">${escapeHtml(f.name)}</option>`).join("");
   company.innerHTML = opts;
   filterCompany.innerHTML = `<option value="">Все фирмы</option>` + opts;
+  const mc = document.getElementById("modalCompany");
+  if(mc) mc.innerHTML = opts;
 }
 function getFirm(id){return firms.find(f=>f.id===id) || firms[0] || {name:""}}
 function addTask(){
@@ -681,6 +837,103 @@ function renderList(){
     </div>`;
   }).join("") || `<div class="task">Нет напоминаний по выбранным фильтрам.</div>`;
 }
+
+let selectedCalendarDate = "";
+
+function openDateModal(date){
+  selectedCalendarDate = date;
+  const modal = document.getElementById("dateModal");
+  const titleEl = document.getElementById("dateModalTitle");
+  const subEl = document.getElementById("dateModalSubtitle");
+  const listEl = document.getElementById("dateTasks");
+
+  if(!modal) return;
+
+  const niceDate = formatDate(date);
+  titleEl.textContent = "Добавить напоминание";
+  subEl.textContent = "Дата: " + niceDate;
+
+  const sameDay = tasks.filter(t => t.dueDate === date).sort((a,b)=>String(a.title).localeCompare(String(b.title),"ru"));
+
+  if(sameDay.length){
+    listEl.innerHTML = `<div class="small" style="margin-bottom:8px">Уже есть на эту дату:</div>` + sameDay.map(t => {
+      const cls = t.done ? "Готово" : typeNames[t.type] || "Задача";
+      return `<div class="date-task-item">
+        <b>${escapeHtml(t.title)}</b>
+        <div class="small">${escapeHtml(t.company)} • ${escapeHtml(cls)}${t.amount ? " • " + escapeHtml(money(t.amount)) : ""}</div>
+      </div>`;
+    }).join("");
+  } else {
+    listEl.innerHTML = `<div class="date-task-item small">На эту дату пока нет задач.</div>`;
+  }
+
+  const mc = document.getElementById("modalCompany");
+  if(mc && !mc.innerHTML.trim()){
+    const opts = firms.map(f=>`<option value="${escapeHtml(f.id)}">${escapeHtml(f.name)}</option>`).join("");
+    mc.innerHTML = opts;
+  }
+
+  document.getElementById("modalType").value = "report";
+  document.getElementById("modalRepeat").value = "none";
+  document.getElementById("modalRemind").value = "3";
+  document.getElementById("modalAmount").value = "";
+  document.getElementById("modalTitle").value = "";
+  document.getElementById("modalComment").value = "";
+  const mt = document.getElementById("modalTime");
+  if(mt) mt.value = document.getElementById("globalCalTime")?.value || "09:00";
+
+  modal.classList.add("active");
+}
+
+function closeDateModal(){
+  const modal = document.getElementById("dateModal");
+  if(modal) modal.classList.remove("active");
+}
+
+function addModalTask(){
+  if(!selectedCalendarDate){
+    alert("Дата не выбрана");
+    return;
+  }
+
+  const companyId = document.getElementById("modalCompany").value;
+  const firm = getFirm(companyId);
+  const taskTitle = clean(document.getElementById("modalTitle").value);
+
+  if(!taskTitle){
+    alert("Введите название задачи");
+    return;
+  }
+
+  const t = {
+    id: uid(),
+    firmId: companyId,
+    company: firm.name,
+    dueDate: selectedCalendarDate,
+    type: document.getElementById("modalType").value,
+    repeat: document.getElementById("modalRepeat").value,
+    remindBefore: Number(document.getElementById("modalRemind").value),
+    amount: clean(document.getElementById("modalAmount").value),
+    title: taskTitle,
+    comment: clean(document.getElementById("modalComment").value),
+    done: false,
+    created: new Date().toISOString()
+  };
+
+  tasks.unshift(t);
+  saveTasks();
+  render();
+  vibrate();
+  toast("Напоминание добавлено на " + formatDate(selectedCalendarDate));
+
+  const keepDate = selectedCalendarDate;
+  openDateModal(keepDate);
+}
+
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Escape") closeDateModal();
+});
+
 function renderCalendar(){
   const y=current.getFullYear(), m=current.getMonth(), names=["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
   calTitle.textContent=current.toLocaleString("ru-RU",{month:"long",year:"numeric"});
@@ -688,7 +941,7 @@ function renderCalendar(){
   let html=names.map(n=>`<div class="day-name">${n}</div>`).join(""), today=todayStr();
   for(let i=0;i<42;i++){
     const d=new Date(start); d.setDate(start.getDate()+i); const ds=toYMD(d); const items=tasks.filter(t=>t.dueDate===ds&&!t.done); const inMonth=d.getMonth()===m;
-    html+=`<div class="day ${ds===today?'today':''}" style="${inMonth?'':'opacity:.35'}"><div class="day-num">${d.getDate()}</div>${items.slice(0,3).map(t=>`<div class="event-line"><span class="dot ${typeClass[t.type]||''}"></span>${escapeHtml(t.title)}</div>`).join("")}${items.length>3?`<div class="event-line">+${items.length-3} ещё</div>`:""}</div>`;
+    html+=`<div class="day ${ds===today?'today':''}" style="${inMonth?'':'opacity:.35'}" onclick="openDateModal('${ds}')"><div class="day-num">${d.getDate()}</div>${items.slice(0,3).map(t=>`<div class="event-line"><span class="dot ${typeClass[t.type]||''}"></span>${escapeHtml(t.title)}</div>`).join("")}${items.length>3?`<div class="event-line">+${items.length-3} ещё</div>`:""}</div>`;
   }
   calendar.innerHTML=html;
 }
