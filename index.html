@@ -403,6 +403,7 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
         <div>
           <div class="panel">
             <h3>Быстро добавить напоминание</h3>
+            <div class="small" style="margin-bottom:10px">В поле «Фирма» можно выбрать одну фирму или «Все фирмы сразу».</div>
             <div class="form-grid">
               <div><label>Фирма</label><select id="company"></select></div>
               <div><label>Дата срока</label><input id="dueDate" type="date"></div>
@@ -467,6 +468,7 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
         <div class="firm-toolbar">
           <button onclick="openFirmForm()">Добавить фирму</button>
           <button class="secondary" onclick="exportFirmsCsv()">Экспорт реквизитов CSV</button>
+          <button class="secondary" onclick="restoreDefaultFirmsHard()">Обновить список фирм</button>
           <button class="secondary" onclick="restoreDefaultFirms()">Восстановить реквизиты из файла</button>
         </div>
 
@@ -645,7 +647,74 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
 
 <script>
 let tasks = JSON.parse(localStorage.getItem("bux_rem_tasks_v4") || "[]");
-let firms = JSON.parse(localStorage.getItem("bux_rem_firms_v4") || "[]");
+const DEFAULT_FIRMS = [
+  {
+    "id": "firm_esg_construction_pro",
+    "name": "ИП ООО «ESG-CONSTRUCTION PRO»",
+    "inn": "308334947",
+    "oked": "",
+    "account": "20208000305369951001",
+    "bank": "\"ИПАК ЙУЛИ\" АИТ банкининг Мирзо Улугбек ф-л",
+    "mfo": "00421",
+    "director": "Омирзаков Д.",
+    "phone": "",
+    "address": "город Ташкент, Юнусабадский район, Буюк Турон MFY, Ул. Абдулла Кадирий, дом 1-б",
+    "note": "Рег. код НДС 326020161376"
+  },
+  {
+    "id": "firm_white_way_project_group",
+    "name": "OOO \"WHITE WAY PROJECT GROUP\"",
+    "inn": "303715318",
+    "oked": "",
+    "account": "20208000100581260002",
+    "bank": "Головной офис Ипак Йули банка",
+    "mfo": "00444",
+    "director": "Бердинов.Б",
+    "phone": "",
+    "address": "город Ташкент, Юнусабадский район, МСГ Минор, квартал Ц-6 дом 70",
+    "note": ""
+  },
+  {
+    "id": "firm_digital_engineering_services",
+    "name": "ООО «DIGITAL ENGINEERING SERVICES»",
+    "inn": "310408940",
+    "oked": "",
+    "account": "20208000205638933001",
+    "bank": "Головной офис Ипак Йули банка",
+    "mfo": "00444",
+    "director": "Нурумов Г.",
+    "phone": "",
+    "address": "город Ташкент, Юнусабадский район, Буюк Турон MFY, Ул. Абдулла Кадирий, дом 1-б",
+    "note": "Рег. код НДС 326050235468"
+  },
+  {
+    "id": "firm_design_expertise_projects",
+    "name": "ООО «DESIGN EXPERTISE PROJECTS»",
+    "inn": "308989875",
+    "oked": "",
+    "account": "20208000105456087001",
+    "bank": "Головной офис Tenge Bank",
+    "mfo": "01176",
+    "director": "Тер-Акопов Т.",
+    "phone": "",
+    "address": "город Ташкент, Юнусабадский район, Буюк Турон MFY, Ул. Абдулла Кадирий, дом 1-б",
+    "note": ""
+  },
+  {
+    "id": "firm_te_com_project",
+    "name": "ООО «TE-COM PROJECT»",
+    "inn": "311248064",
+    "oked": "",
+    "account": "20208000407047055001",
+    "bank": "Операционное управление АКБ «Капиталбанк»",
+    "mfo": "00974",
+    "director": "Саримсакова С.",
+    "phone": "",
+    "address": "город Ташкент, Сергелийский район, Софдил МФЙ, ул. Шокир ариқ, дом 84",
+    "note": ""
+  }
+];
+let firms = JSON.parse(localStorage.getItem("esg_dashboard_firms_v10") || JSON.stringify(DEFAULT_FIRMS));
 let current = new Date();
 let deferredPrompt = null;
 const fmt = new Intl.NumberFormat("ru-RU");
@@ -721,12 +790,22 @@ const DEFAULT_FIRMS = [
 ];
 
 function initDefaultFirms(){
-  const hasReal = Array.isArray(firms) && firms.some(f => String(f.name || "").includes("ESG-CONSTRUCTION") || String(f.inn || "") === "308334947");
-  const onlyPlaceholders = Array.isArray(firms) && firms.length && firms.every(f => /^Фирма\s*\d+$/i.test(String(f.name || "").trim()));
-  if (!Array.isArray(firms) || firms.length === 0 || onlyPlaceholders || !hasReal) {
+  const realCount = Array.isArray(firms)
+    ? firms.filter(f => f && f.id && f.name && !/^Фирма\\s*\\d+$/i.test(String(f.name).trim())).length
+    : 0;
+
+  if(realCount < 5){
     firms = JSON.parse(JSON.stringify(DEFAULT_FIRMS));
     saveFirms();
   }
+}
+
+function restoreDefaultFirmsHard(){
+  firms = JSON.parse(JSON.stringify(DEFAULT_FIRMS));
+  saveFirms();
+  fillFirmSelects();
+  render();
+  toast("Список фирм обновлён");
 }
 
 function restoreDefaultFirms(){
@@ -750,7 +829,7 @@ function dateObj(s){return new Date(s+"T00:00:00")}
 function daysBetween(a,b){return Math.ceil((dateObj(b)-dateObj(a))/(1000*60*60*24))}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
 function saveTasks(){localStorage.setItem("bux_rem_tasks_v4",JSON.stringify(tasks))}
-function saveFirms(){localStorage.setItem("bux_rem_firms_v4",JSON.stringify(firms))}
+function saveFirms(){localStorage.setItem("esg_dashboard_firms_v10",JSON.stringify(firms))}
 function toast(t){const el=document.getElementById("toast");el.textContent=t;el.style.display="block";setTimeout(()=>el.style.display="none",2400)}
 function vibrate(){if(navigator.vibrate)navigator.vibrate(35)}
 function showPage(id){
@@ -760,17 +839,89 @@ function showPage(id){
   render();
 }
 function fillFirmSelects(){
-  const opts = firms.map(f=>`<option value="${escapeHtml(f.id)}">${escapeHtml(f.name)}</option>`).join("");
-  company.innerHTML = opts;
-  filterCompany.innerHTML = `<option value="">Все фирмы</option>` + opts;
-  const mc = document.getElementById("modalCompany");
-  if(mc) mc.innerHTML = opts;
+  if(!Array.isArray(firms) || firms.length < 5){
+    firms = JSON.parse(JSON.stringify(DEFAULT_FIRMS));
+    saveFirms();
+  }
+
+  const firmOptions = firms
+    .map(f => `<option value="${escapeHtml(f.id)}">${escapeHtml(f.name)}</option>`)
+    .join("");
+
+  const addOptions = `<option value="__all__">Все фирмы сразу</option>` + firmOptions;
+
+  const companySelect = document.getElementById("company");
+  if(companySelect) companySelect.innerHTML = addOptions;
+
+  const modalCompanySelect = document.getElementById("modalCompany");
+  if(modalCompanySelect) modalCompanySelect.innerHTML = addOptions;
+
+  const filterCompanySelect = document.getElementById("filterCompany");
+  if(filterCompanySelect) {
+    filterCompanySelect.innerHTML = `<option value="">Все фирмы</option>` + firmOptions;
+  }
 }
 function getFirm(id){return firms.find(f=>f.id===id) || firms[0] || {name:""}}
+function makeTaskForFirm(firm, data){
+  return {
+    id: uid(),
+    firmId: firm.id,
+    company: firm.name,
+    dueDate: data.dueDate,
+    type: data.type,
+    repeat: data.repeat,
+    remindBefore: Number(data.remindBefore),
+    amount: clean(data.amount),
+    title: clean(data.title),
+    comment: clean(data.comment),
+    done: false,
+    created: new Date().toISOString()
+  };
+}
+
+function addTasksForSelection(companyId, data){
+  if(!Array.isArray(firms) || firms.length < 5){
+    firms = JSON.parse(JSON.stringify(DEFAULT_FIRMS));
+    saveFirms();
+    fillFirmSelects();
+  }
+
+  const targetFirms = companyId === "__all__"
+    ? firms
+    : firms.filter(f => f.id === companyId);
+
+  let added = 0;
+
+  for(const firm of targetFirms){
+    tasks.unshift(makeTaskForFirm(firm, data));
+    added++;
+  }
+
+  saveTasks();
+  render();
+  vibrate();
+  return added;
+}
+
 function addTask(){
-  const firm = getFirm(company.value);
-  const t = {id:uid(),firmId:company.value,company:firm.name,dueDate:dueDate.value||todayStr(),type:type.value,repeat:repeat.value,remindBefore:Number(remindBefore.value),amount:clean(amount.value),title:clean(title.value)||"Напоминание",comment:clean(comment.value),done:false,created:new Date().toISOString()};
-  tasks.unshift(t); saveTasks(); title.value=""; comment.value=""; amount.value=""; render(); vibrate(); toast("Напоминание добавлено");
+  const companyId = document.getElementById("company").value;
+  const taskTitle = clean(title.value) || "Напоминание";
+
+  const data = {
+    dueDate: dueDate.value || todayStr(),
+    type: type.value,
+    repeat: repeat.value,
+    remindBefore: Number(remindBefore.value),
+    amount: amount.value,
+    title: taskTitle,
+    comment: comment.value
+  };
+
+  const added = addTasksForSelection(companyId, data);
+  title.value = "";
+  comment.value = "";
+  amount.value = "";
+  toast(added > 1 ? "Добавлено по всем фирмам: " + added : "Напоминание добавлено");
 }
 function nextDate(date, repeat){
   const d = dateObj(date);
@@ -866,12 +1017,7 @@ function openDateModal(date){
   } else {
     listEl.innerHTML = `<div class="date-task-item small">На эту дату пока нет задач.</div>`;
   }
-
-  const mc = document.getElementById("modalCompany");
-  if(mc && !mc.innerHTML.trim()){
-    const opts = firms.map(f=>`<option value="${escapeHtml(f.id)}">${escapeHtml(f.name)}</option>`).join("");
-    mc.innerHTML = opts;
-  }
+  fillFirmSelects();
 
   document.getElementById("modalType").value = "report";
   document.getElementById("modalRepeat").value = "none";
@@ -897,7 +1043,6 @@ function addModalTask(){
   }
 
   const companyId = document.getElementById("modalCompany").value;
-  const firm = getFirm(companyId);
   const taskTitle = clean(document.getElementById("modalTitle").value);
 
   if(!taskTitle){
@@ -905,26 +1050,18 @@ function addModalTask(){
     return;
   }
 
-  const t = {
-    id: uid(),
-    firmId: companyId,
-    company: firm.name,
+  const data = {
     dueDate: selectedCalendarDate,
     type: document.getElementById("modalType").value,
     repeat: document.getElementById("modalRepeat").value,
     remindBefore: Number(document.getElementById("modalRemind").value),
-    amount: clean(document.getElementById("modalAmount").value),
+    amount: document.getElementById("modalAmount").value,
     title: taskTitle,
-    comment: clean(document.getElementById("modalComment").value),
-    done: false,
-    created: new Date().toISOString()
+    comment: document.getElementById("modalComment").value
   };
 
-  tasks.unshift(t);
-  saveTasks();
-  render();
-  vibrate();
-  toast("Напоминание добавлено на " + formatDate(selectedCalendarDate));
+  const added = addTasksForSelection(companyId, data);
+  toast(added > 1 ? "Добавлено на дату по всем фирмам: " + added : "Напоминание добавлено на " + formatDate(selectedCalendarDate));
 
   const keepDate = selectedCalendarDate;
   openDateModal(keepDate);
@@ -1164,7 +1301,14 @@ function escapeHtml(v){return String(v??"").replaceAll("&","&amp;").replaceAll("
 window.addEventListener("beforeinstallprompt",(e)=>{e.preventDefault();deferredPrompt=e;installBtn.style.display="block"});
 installBtn.addEventListener("click",async()=>{if(!deferredPrompt){toast("Для установки откройте через сайт HTTPS");return}deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installBtn.style.display="none"});
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
-window.addEventListener("load",()=>{initDefaultFirms();dueDate.value=todayStr();const bm=document.getElementById("bulkMonth"); if(bm) bm.value=toYMD(new Date()).slice(0,7); fillFirmSelects();render()});
+window.addEventListener("load",()=>{
+  initDefaultFirms();
+  fillFirmSelects();
+  dueDate.value=todayStr();
+  const bm=document.getElementById("bulkMonth");
+  if(bm) bm.value=toYMD(new Date()).slice(0,7);
+  render();
+});
 </script>
 </body>
 </html>
