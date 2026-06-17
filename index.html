@@ -513,6 +513,273 @@ button.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}b
   }
 }
 
+
+/* ===== PREMIUM ANIMATION PACK ===== */
+:root{
+  --anim-fast:.18s;
+  --anim-mid:.32s;
+  --anim-slow:.7s;
+}
+
+/* animated neon background */
+body::before,
+body::after{
+  content:"";
+  position:fixed;
+  width:420px;
+  height:420px;
+  border-radius:999px;
+  pointer-events:none;
+  filter:blur(36px);
+  opacity:.18;
+  z-index:0;
+  animation:orbFloat 12s ease-in-out infinite alternate;
+}
+body::before{
+  left:-150px;
+  top:8%;
+  background:radial-gradient(circle, rgba(56,189,248,.7), rgba(56,189,248,0) 68%);
+}
+body::after{
+  right:-170px;
+  bottom:10%;
+  background:radial-gradient(circle, rgba(139,92,246,.72), rgba(139,92,246,0) 68%);
+  animation-delay:-4s;
+}
+.app{
+  position:relative;
+  z-index:1;
+}
+
+/* page appearance */
+.page{
+  animation:pageFadeUp .42s ease both;
+}
+.page:not(.active){
+  animation:none;
+}
+.panel,
+.hero,
+.stat,
+.task,
+.firm-card{
+  animation:softCardIn .45s ease both;
+}
+
+/* hero and cards */
+.hero{
+  position:relative;
+  overflow:hidden;
+}
+.hero::after{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  background:linear-gradient(120deg, transparent 0%, rgba(255,255,255,.12) 45%, transparent 70%);
+  transform:translateX(-120%);
+  animation:heroShine 7s ease-in-out infinite;
+  pointer-events:none;
+}
+.stat,
+.panel,
+.task,
+.firm-card,
+.day{
+  transition:
+    transform var(--anim-mid) ease,
+    border-color var(--anim-mid) ease,
+    box-shadow var(--anim-mid) ease,
+    background var(--anim-mid) ease;
+}
+.stat:hover,
+.panel:hover,
+.task:hover,
+.firm-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 18px 48px rgba(0,0,0,.22);
+  border-color:rgba(56,189,248,.24);
+}
+
+/* menu glow */
+.nav{
+  position:relative;
+  overflow:hidden;
+  transition:transform var(--anim-fast) ease, background var(--anim-mid) ease, color var(--anim-mid) ease, box-shadow var(--anim-mid) ease;
+}
+.nav:hover{
+  transform:translateY(-1px);
+}
+.nav.active{
+  box-shadow:0 0 0 1px rgba(56,189,248,.22), 0 12px 34px rgba(56,189,248,.13);
+}
+.nav.active::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg, rgba(56,189,248,.14), rgba(139,92,246,.14));
+  opacity:.85;
+  pointer-events:none;
+}
+
+/* calendar animation */
+.day{
+  animation:calendarDayIn .34s ease both;
+}
+.day:nth-child(7n+1){animation-delay:.02s}
+.day:nth-child(7n+2){animation-delay:.04s}
+.day:nth-child(7n+3){animation-delay:.06s}
+.day:nth-child(7n+4){animation-delay:.08s}
+.day:nth-child(7n+5){animation-delay:.10s}
+.day:nth-child(7n+6){animation-delay:.12s}
+.day:nth-child(7n+7){animation-delay:.14s}
+.day:hover{
+  transform:translateY(-3px) scale(1.015);
+  box-shadow:0 16px 38px rgba(56,189,248,.12);
+}
+.day.today{
+  animation:calendarDayIn .34s ease both, todayPulse 2.6s ease-in-out infinite;
+}
+
+/* task done animation */
+.task.done{
+  animation:donePulse .55s ease both;
+  border-color:rgba(34,197,94,.35);
+  background:linear-gradient(180deg, rgba(34,197,94,.10), rgba(255,255,255,.045));
+}
+.task.done .task-title,
+.task.done b{
+  text-decoration:line-through;
+  opacity:.78;
+}
+button,
+.firm-picker-display,
+.firm-picker-option,
+.modal-close{
+  transition:transform var(--anim-fast) ease, box-shadow var(--anim-mid) ease, border-color var(--anim-mid) ease, background var(--anim-mid) ease;
+}
+button:active,
+.firm-picker-display:active,
+.firm-picker-option:active{
+  transform:scale(.985);
+}
+
+/* popup menu animation */
+.firm-picker.open .firm-picker-menu{
+  animation:popupDrop .22s ease both;
+}
+.modal-overlay.active .modal-box{
+  animation:modalPop .28s ease both;
+}
+.toast{
+  animation:toastFloat .28s ease both;
+}
+
+/* inputs focus */
+input:focus,
+select:focus,
+textarea:focus{
+  box-shadow:0 0 0 3px rgba(56,189,248,.14), 0 10px 30px rgba(56,189,248,.08);
+}
+
+/* small moving dots in event lines */
+.event-line{
+  transition:transform var(--anim-fast) ease, color var(--anim-mid) ease;
+}
+.event-line:hover{
+  transform:translateX(2px);
+}
+
+/* loading feel for newly rendered items */
+.task:nth-child(1),
+.firm-card:nth-child(1),
+.stat:nth-child(1){animation-delay:.02s}
+.task:nth-child(2),
+.firm-card:nth-child(2),
+.stat:nth-child(2){animation-delay:.05s}
+.task:nth-child(3),
+.firm-card:nth-child(3),
+.stat:nth-child(3){animation-delay:.08s}
+.task:nth-child(4),
+.firm-card:nth-child(4),
+.stat:nth-child(4){animation-delay:.11s}
+
+/* keyframes */
+@keyframes pageFadeUp{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes softCardIn{
+  from{opacity:0;transform:translateY(10px) scale(.992)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes calendarDayIn{
+  from{opacity:0;transform:translateY(8px) scale(.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes todayPulse{
+  0%,100%{box-shadow:0 0 0 rgba(56,189,248,0)}
+  50%{box-shadow:0 0 0 4px rgba(56,189,248,.10), 0 0 28px rgba(56,189,248,.12)}
+}
+@keyframes donePulse{
+  0%{transform:scale(1)}
+  45%{transform:scale(1.018)}
+  100%{transform:scale(1)}
+}
+@keyframes popupDrop{
+  from{opacity:0;transform:translateY(-8px) scale(.985)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes modalPop{
+  from{opacity:0;transform:translateY(16px) scale(.985)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes toastFloat{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes heroShine{
+  0%,72%{transform:translateX(-120%)}
+  100%{transform:translateX(120%)}
+}
+@keyframes orbFloat{
+  from{transform:translate3d(0,0,0) scale(1)}
+  to{transform:translate3d(40px,30px,0) scale(1.08)}
+}
+
+/* mobile optimization */
+@media(max-width:520px){
+  body::before,
+  body::after{
+    width:260px;
+    height:260px;
+    filter:blur(28px);
+    opacity:.14;
+  }
+  .stat:hover,
+  .panel:hover,
+  .task:hover,
+  .firm-card:hover,
+  .day:hover{
+    transform:none;
+  }
+}
+
+/* respect reduced motion */
+@media(prefers-reduced-motion:reduce){
+  *,
+  *::before,
+  *::after{
+    animation:none!important;
+    transition:none!important;
+    scroll-behavior:auto!important;
+  }
+}
+
+
+.pressing{
+  transform:scale(.985)!important;
+}
+
 </style>
 
 </head>
@@ -1230,7 +1497,7 @@ function renderList(){
       ${t.comment?`<div class="small" style="margin-top:6px">${escapeHtml(t.comment)}</div>`:""}
       <div class="btns"><button class="secondary" onclick="toggleDone('${t.id}')">${t.done?'Вернуть':'Готово'}</button><button class="secondary" onclick="copyPaymentText('${t.id}')">Текст платежа</button><button class="danger" onclick="delTask('${t.id}')">Удалить</button></div>
     </div>`;
-  }).join("") || `<div class="task">Нет напоминаний по выбранным фильтрам.</div>`;
+  }).join("") || `<div class="task ${t.done?'done':''}">Нет напоминаний по выбранным фильтрам.</div>`;
 }
 
 let selectedCalendarDate = "";
@@ -1551,6 +1818,23 @@ function escapeHtml(v){return String(v??"").replaceAll("&","&amp;").replaceAll("
 window.addEventListener("beforeinstallprompt",(e)=>{e.preventDefault();deferredPrompt=e;installBtn.style.display="block"});
 installBtn.addEventListener("click",async()=>{if(!deferredPrompt){toast("Для установки откройте через сайт HTTPS");return}deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installBtn.style.display="none"});
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
+
+function addPressRipple(){
+  document.querySelectorAll("button,.nav,.day,.firm-picker-display").forEach(el=>{
+    if(el.dataset.rippleReady) return;
+    el.dataset.rippleReady = "1";
+    el.addEventListener("pointerdown", ()=> {
+      el.classList.add("pressing");
+      setTimeout(()=>el.classList.remove("pressing"), 180);
+    });
+  });
+}
+
+const originalRenderForAnimations = typeof render === "function" ? render : null;
+if(originalRenderForAnimations){
+  render = function(){ originalRenderForAnimations(); setTimeout(addPressRipple, 0); };
+}
+
 window.addEventListener("load",()=>{initDefaultFirms();dueDate.value=todayStr();const bm=document.getElementById("bulkMonth"); if(bm) bm.value=toYMD(new Date()).slice(0,7); fillFirmSelects();render()});
 </script>
 </body>
